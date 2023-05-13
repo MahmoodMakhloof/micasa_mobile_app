@@ -1,16 +1,14 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shca/core/helpers/style_config.dart';
-import 'package:shca/widgets/custom_button.dart';
 import 'package:utilities/utilities.dart';
 
 import '../../../generated/assets.gen.dart';
+import '../../../widgets/custom_button.dart';
 
-class SchedulesView extends StatelessWidget {
-  const SchedulesView({super.key});
+class BoardsScreen extends StatelessWidget {
+  const BoardsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +26,9 @@ class SchedulesView extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ListTile(
-                  leading: Assets.images.vectors.schedule.svg(height: 70),
+                  leading: Assets.images.vectors.scan.svg(height: 70),
                   title: Text(
-                    "Schedule is some actions executed on specific time you choose.",
+                    "Connect new boards by scanning QR code on it.",
                     style: Style.appTheme.textTheme.titleMedium!.copyWith(
                       color: Colors.white,
                       fontSize: 17,
@@ -41,7 +39,7 @@ class SchedulesView extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: CustomButton(
                       backgroundColor: Colors.indigoAccent,
-                      child: const Text("Create New Schedule"),
+                      child: const Text("Scan New Board"),
                       onPressed: () {},
                     ),
                   ),
@@ -51,10 +49,10 @@ class SchedulesView extends StatelessWidget {
           ),
           ListView.separated(
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: 4,
+            itemCount: 2,
             padding: const EdgeInsets.all(10),
             shrinkWrap: true,
-            itemBuilder: (context, index) => const ScheduleItem(),
+            itemBuilder: (context, index) => const BoardItem(),
             separatorBuilder: ((context, index) => const Space.v10()),
           ),
         ],
@@ -63,24 +61,44 @@ class SchedulesView extends StatelessWidget {
   }
 }
 
-class ScheduleItem extends StatelessWidget {
-  const ScheduleItem({
+class BoardItem extends StatelessWidget {
+  const BoardItem({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    bool isOn = Random().nextBool();
     return Container(
         decoration: BoxDecoration(
-            // gradient: isOn ? CColors.blueLinearGradient : null,
-            color: isOn ? CColors.gr2 : Colors.white,
+            border: Border.all(color: Colors.grey.shade200),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(10)),
-        child: ListTile(
-          leading: Icon(FontAwesomeIcons.clock),
-          title: Text("Turn off all fans after midnight"),
-          subtitle: Text("Everyday at 08:00 PM"),
-          trailing: Switch(value: isOn, onChanged: (value) {}),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: ListTile(
+            leading: const Icon(CupertinoIcons.wifi),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Board1"),
+                Text(
+                  "SHCA4 - 4 Devices",
+                  style:
+                      Style.appTheme.textTheme.bodySmall!.copyWith(height: 1),
+                ),
+              ],
+            ),
+            subtitle: const Text(
+              "Running",
+              style: TextStyle(
+                color: Colors.green,
+              ),
+            ),
+            trailing: IconButton(
+              icon: const Icon(CupertinoIcons.forward),
+              onPressed: () {},
+            ),
+          ),
         ));
   }
 }

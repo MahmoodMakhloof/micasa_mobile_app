@@ -23,14 +23,11 @@ class $AssetsImagesGen {
 class $AssetsLocalizationGen {
   const $AssetsLocalizationGen();
 
-  /// File path: assets/localization/ar-EG.json
-  String get arEG => 'assets/localization/ar-EG.json';
-
   /// File path: assets/localization/en-US.json
   String get enUS => 'assets/localization/en-US.json';
 
   /// List of all assets
-  List<String> get values => [arEG, enUS];
+  List<String> get values => [enUS];
 }
 
 class $AssetsImagesLottieGen {
@@ -138,6 +135,9 @@ class $AssetsImagesVectorsGen {
   /// File path: assets/images/vectors/relax.svg
   SvgGenImage get relax => const SvgGenImage('assets/images/vectors/relax.svg');
 
+  /// File path: assets/images/vectors/scan.svg
+  SvgGenImage get scan => const SvgGenImage('assets/images/vectors/scan.svg');
+
   /// File path: assets/images/vectors/schedule.svg
   SvgGenImage get schedule =>
       const SvgGenImage('assets/images/vectors/schedule.svg');
@@ -208,6 +208,7 @@ class $AssetsImagesVectorsGen {
         megaphone,
         play,
         relax,
+        scan,
         schedule,
         search,
         settingsSliders,

@@ -9,12 +9,11 @@ import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/generated/assets.gen.dart';
 import 'package:shca/generated/locale_keys.g.dart';
+import 'package:shca/modules/boards/views/boards.dart';
 import 'package:shca/modules/home/views/home.dart';
 import 'package:shca/modules/profile/views/profile.dart';
 import 'package:shca/modules/scences/views/scences.dart';
 import 'package:shca/modules/schedules/views/schedules.dart';
-import 'package:shca/modules/settings/views/settings.dart';
-import 'package:utilities/utilities.dart';
 
 import '../modules/auth/blocs/get_user_data_cubit/get_user_data_cubit.dart';
 
@@ -29,7 +28,7 @@ class RootState extends State<Root> {
   late int currentIndex;
   List<Widget> views = const [
     HomeScreen(),
-    SettingsScreen(),
+    BoardsScreen(),
     SizedBox.shrink(),
     SchedulesView(),
     ScencesView(),
