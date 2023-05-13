@@ -1,0 +1,26 @@
+{
+    "general": {
+        "no_data":"No data"
+    },
+    
+    "auth": {
+        "sign_with_google":"SignIn With Google",
+        "logout":"Logout"
+    },
+    "pages":{
+        "home":"Home",
+        "boards":"Boards",
+        "scences":"Scences",
+        "schedule":"Schedules"
+
+    },
+    "errors": {
+        "no_internet": "No Internet Connection",
+        "error_happened":"Error Happened",
+        "retry":"Retry"
+    },
+    "utils":{
+        "copied_to_clipboard":"Copied to clipboard",
+        "change_lang":"Change Language"
+    }
+}

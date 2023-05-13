@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "908438314725",
+    "project_id": "shca-89db8",
+    "storage_bucket": "shca-89db8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908438314725:android:1048465d0f6e4b8a737e0c",
+        "android_client_info": {
+          "package_name": "com.example.shca"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "908438314725-jd1dc5bn3ogoe8650bkr843ubcmjfngi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBD3gdnixpuMZXMpFMaB-chqXURlGfU5I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "908438314725-jd1dc5bn3ogoe8650bkr843ubcmjfngi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
