@@ -1,14 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/widgets/back_button.dart';
-import 'package:shca/widgets/custom_button.dart';
 import 'package:utilities/utilities.dart';
 
-import '../../../generated/assets.gen.dart';
 import '../../auth/blocs/get_user_data_cubit/get_user_data_cubit.dart';
 import '../../auth/repositories/authentication_repository_impl.dart';
 
@@ -83,67 +80,38 @@ class ConnectRequest extends StatelessWidget {
           borderRadius: BorderRadius.circular(15), color: Colors.white),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ListTile(
-          leading: const CircleAvatar(
-            radius: 25,
-            backgroundImage: NetworkImage(
-                "https://i.pinimg.com/564x/3e/77/8a/3e778a1cd7385301da9691224f354d1d.jpg"),
-          ),
-          title: RichText(
-              text: TextSpan(children: [
-            TextSpan(
-              text: "Sherin Ahmed",
-              style: Style.appTheme.textTheme.titleLarge!.copyWith(
-                  height: 1.5, fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            TextSpan(
-              text: " asked you to connect your device ",
-              style: Style.appTheme.textTheme.bodyMedium!.copyWith(
-                  height: 1.5, fontSize: 16, fontWeight: FontWeight.w400),
-            ),
-            TextSpan(
-              text: "STM32",
-              style: Style.appTheme.textTheme.bodyMedium!.copyWith(
-                  height: 1.5,
-                  fontSize: 14,
-                  color: CColors.primary,
-                  fontWeight: FontWeight.w600),
-            ),
-          ])),
-          subtitle: SizedBox(
-            height: 50,
-            child: Row(
-              children: [
-                Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: CustomButton(
-                      bgGradient: CColors.blueLinearGradient,
-                      child: const Text("Share Device"),
-                      onPressed: () {},
-                    ),
-                  ),
+        child: Column(
+          children: [
+            ListTile(
+              leading: const CircleAvatar(
+                radius: 25,
+                backgroundImage: NetworkImage(
+                    "https://i.pinimg.com/564x/3e/77/8a/3e778a1cd7385301da9691224f354d1d.jpg"),
+              ),
+              title: RichText(
+                  text: TextSpan(children: [
+                TextSpan(
+                  text: "Sherin Ahmed",
+                  style: Style.appTheme.textTheme.titleLarge!.copyWith(
+                      height: 1.5, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
-                const Space.h10(),
-                Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: SizedBox(
-                      width: 50,
-                      child: CustomButton(
-                        backgroundColor: Colors.red,
-                        child: const Icon(
-                          CupertinoIcons.xmark,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {},
-                      ),
-                    ),
-                  ),
+                TextSpan(
+                  text: " added you to connect and control ",
+                  style: Style.appTheme.textTheme.bodyMedium!.copyWith(
+                      height: 1.5, fontSize: 16, fontWeight: FontWeight.w400),
                 ),
-              ],
+                TextSpan(
+                  text: "Bed Room",
+                  style: Style.appTheme.textTheme.bodyMedium!.copyWith(
+                      height: 1.5,
+                      fontSize: 14,
+                      color: CColors.primary,
+                      fontWeight: FontWeight.w600),
+                ),
+              ])),
             ),
-          ),
+            //
+          ],
         ),
       ),
     );

@@ -14,16 +14,16 @@ Board _$BoardFromJson(Map<String, dynamic> json) => $checkedCreate(
           id: $checkedConvert('_id', (v) => v as String),
           name: $checkedConvert('name', (v) => v as String),
           model: $checkedConvert('model', (v) => v as String),
-          image: $checkedConvert('image', (v) => v as String),
+          isActive: $checkedConvert('is_active', (v) => v as bool),
         );
         return val;
       },
-      fieldKeyMap: const {'id': '_id'},
+      fieldKeyMap: const {'id': '_id', 'isActive': 'is_active'},
     );
 
 Map<String, dynamic> _$BoardToJson(Board instance) => <String, dynamic>{
       '_id': instance.id,
       'name': instance.name,
-      'image': instance.image,
       'model': instance.model,
+      'is_active': instance.isActive,
     };

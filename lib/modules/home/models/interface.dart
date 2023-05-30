@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'board.dart';
+import '../../boards/models/board.dart';
 
 part 'interface.g.dart';
 
@@ -12,13 +12,13 @@ class Interface extends Equatable {
 
   final String name;
   final Board board;
-  final String icon;
+  final String type;
   final int value;
 
   const Interface({
     required this.id,
     required this.name,
-    required this.icon,
+    required this.type,
     required this.board,
     required this.value,
   });
@@ -29,5 +29,5 @@ class Interface extends Equatable {
   Map<String, dynamic> toJson() => _$InterfaceToJson(this);
 
   @override
-  List<Object?> get props => [id, name, board, value,icon];
+  List<Object?> get props => [id, name, board, value, type];
 }

@@ -3,7 +3,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
@@ -14,6 +13,7 @@ import 'package:shca/modules/home/views/home.dart';
 import 'package:shca/modules/profile/views/profile.dart';
 import 'package:shca/modules/scences/views/scences.dart';
 import 'package:shca/modules/schedules/views/schedules.dart';
+import 'package:shca/modules/speech/views/speech_view.dart';
 
 import '../modules/auth/blocs/get_user_data_cubit/get_user_data_cubit.dart';
 
@@ -94,7 +94,7 @@ class RootState extends State<Root> {
         ),
         body: views[currentIndex],
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () => context.navigateTo(const SpeechView()),
           child: const Icon(CupertinoIcons.mic),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

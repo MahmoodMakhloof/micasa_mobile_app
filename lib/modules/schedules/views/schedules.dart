@@ -74,7 +74,7 @@ class ScheduleItem extends StatelessWidget {
     return Container(
         decoration: BoxDecoration(
             // gradient: isOn ? CColors.blueLinearGradient : null,
-            color: isOn ? CColors.gr2 : Colors.white,
+            color: isOn ? CColors.primary.withOpacity(0.1) : Colors.white,
             borderRadius: BorderRadius.circular(10)),
         child: ListTile(
           leading: Icon(FontAwesomeIcons.clock),

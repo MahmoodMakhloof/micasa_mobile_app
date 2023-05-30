@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
+import 'package:shca/modules/boards/views/qr_scanner.dart';
 import 'package:utilities/utilities.dart';
 
 import '../../../generated/assets.gen.dart';
@@ -40,7 +41,8 @@ class BoardsScreen extends StatelessWidget {
                     child: CustomButton(
                       backgroundColor: Colors.indigoAccent,
                       child: const Text("Scan New Board"),
-                      onPressed: () {},
+                      onPressed: () =>
+                          context.navigateTo(const QrScannerView()),
                     ),
                   ),
                 ),
@@ -89,7 +91,7 @@ class BoardItem extends StatelessWidget {
               ],
             ),
             subtitle: const Text(
-              "Running",
+              "Active",
               style: TextStyle(
                 color: Colors.green,
               ),

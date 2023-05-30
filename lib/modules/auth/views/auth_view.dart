@@ -52,7 +52,7 @@ class _AuthView extends StatelessWidget {
                       style: TextStyle(
                           color: CColors.background,
                           fontWeight: FontWeight.w500,
-                          fontSize: 17),
+                          fontSize: 15),
                     ),
                     buttonColor: CColors.primary,
                     backgroundColor: Colors.white,

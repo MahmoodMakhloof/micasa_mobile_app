@@ -5,20 +5,17 @@ import 'interface.dart';
 
 part 'group.g.dart';
 
-
 @JsonSerializable()
 class Group extends Equatable {
   @JsonKey(name: "_id")
   final String id;
-
+  final int numberOfDevices;
   final String name;
-  final List<Interface> interfaces;
-
 
   const Group({
     required this.id,
+    required this.numberOfDevices,
     required this.name,
-    required this.interfaces,
   });
 
   factory Group.fromJson(Map<String, dynamic> json) => _$GroupFromJson(json);
@@ -26,5 +23,5 @@ class Group extends Equatable {
   Map<String, dynamic> toJson() => _$GroupToJson(this);
 
   @override
-  List<Object?> get props => [id, name,  interfaces];
+  List<Object?> get props => [id, name, numberOfDevices];
 }
