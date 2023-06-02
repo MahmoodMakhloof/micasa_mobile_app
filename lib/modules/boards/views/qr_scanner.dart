@@ -1,118 +1,92 @@
 import 'dart:developer';
-import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:shca/modules/boards/blocs/connectBoard/connect_board_cubit.dart';
+import 'package:utilities/utilities.dart';
 
-class QrScannerView extends StatefulWidget {
-  const QrScannerView({Key? key}) : super(key: key);
+import '../../../core/helpers/style_config.dart';
+
+class QrScannerView extends StatelessWidget {
+  const QrScannerView({super.key});
 
   @override
-  State<StatefulWidget> createState() => _QrScannerViewState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => ConnectBoardCubit(context.read()),
+      child: const _QrScannerView(),
+    );
+  }
 }
 
-class _QrScannerViewState extends State<QrScannerView> {
+class _QrScannerView extends StatefulWidget {
+  const _QrScannerView({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => __QrScannerViewState();
+}
+
+class __QrScannerViewState extends State<_QrScannerView> {
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
-  // In order to get hot reload to work we need to pause the camera if the platform
-  // is android, or resume the camera if the platform is iOS.
-  @override
-  void reassemble() {
-    super.reassemble();
-    if (Platform.isAndroid) {
-      controller!.pauseCamera();
-    }
-    controller!.resumeCamera();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Connect New Board"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+                onPressed: () async {
+                  await controller?.toggleFlash();
+                  setState(() {});
+                },
+                icon: FutureBuilder(
+                  future: controller?.getFlashStatus(),
+                  builder: (context, snapshot) {
+                    return snapshot.data ?? false
+                        ? const Icon(
+                            Icons.flash_on,
+                            size: 25,
+                          )
+                        : const Icon(
+                            Icons.flash_off,
+                            size: 25,
+                          );
+                  },
+                )),
+          ),
+        ],
+      ),
       body: Column(
         children: <Widget>[
-          Expanded(flex: 4, child: _buildQrView(context)),
+          Expanded(flex: 5, child: _buildQrView(context)),
           Expanded(
             flex: 1,
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  if (result != null)
-                    Text(
-                        'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}')
-                  else
-                    const Text('Scan a code'),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        margin: const EdgeInsets.all(8),
-                        child: ElevatedButton(
-                            onPressed: () async {
-                              await controller?.toggleFlash();
-                              setState(() {});
-                            },
-                            child: FutureBuilder(
-                              future: controller?.getFlashStatus(),
-                              builder: (context, snapshot) {
-                                return Text('Flash: ${snapshot.data}');
-                              },
-                            )),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(8),
-                        child: ElevatedButton(
-                            onPressed: () async {
-                              await controller?.flipCamera();
-                              setState(() {});
-                            },
-                            child: FutureBuilder(
-                              future: controller?.getCameraInfo(),
-                              builder: (context, snapshot) {
-                                if (snapshot.data != null) {
-                                  return Text(
-                                      'Camera facing ${describeEnum(snapshot.data!)}');
-                                } else {
-                                  return const Text('loading');
-                                }
-                              },
-                            )),
-                      )
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        margin: const EdgeInsets.all(8),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            await controller?.pauseCamera();
-                          },
-                          child: const Text('pause',
-                              style: TextStyle(fontSize: 20)),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                if (result != null)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        const CircularProgressIndicator(),
+                        const Space.v10(),
+                        Text(
+                          'Token: ${result!.code}',
                         ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(8),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            await controller?.resumeCamera();
-                          },
-                          child: const Text('resume',
-                              style: TextStyle(fontSize: 20)),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
+                      ],
+                    ),
+                  )
+                else
+                  const Text(
+                      'Scan QR code on the board to connect and control it'),
+              ],
             ),
           )
         ],
@@ -124,15 +98,15 @@ class _QrScannerViewState extends State<QrScannerView> {
     // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
     var scanArea = (MediaQuery.of(context).size.width < 400 ||
             MediaQuery.of(context).size.height < 400)
-        ? 150.0
-        : 300.0;
+        ? 250.0
+        : 400.0;
     // To ensure the Scanner view is properly sizes after rotation
     // we need to listen for Flutter SizeChanged notification and update controller
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
       overlay: QrScannerOverlayShape(
-          borderColor: Colors.red,
+          borderColor: CColors.primary,
           borderRadius: 10,
           borderLength: 30,
           borderWidth: 10,
@@ -149,6 +123,13 @@ class _QrScannerViewState extends State<QrScannerView> {
       setState(() {
         result = scanData;
       });
+
+      var token = scanData.code;
+      if (token != null && token.isNotEmpty) {
+        controller.pauseCamera();
+        context.read<ConnectBoardCubit>().connectBoard(token);
+        log("Connecting to board....");
+      }
     });
   }
 
@@ -166,5 +147,4 @@ class _QrScannerViewState extends State<QrScannerView> {
     controller?.dispose();
     super.dispose();
   }
-
 }

@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shca/modules/schedules/models/schedule.dart';
+import 'package:shca/modules/schedules/repositories/schedule_repository.dart';
 import 'package:utilities/utilities.dart';
 
-import '../../../scences/repositories/schedule_repository.dart';
 
 part 'fetch_schedules_state.dart';
 

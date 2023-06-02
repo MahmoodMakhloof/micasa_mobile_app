@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -17,12 +19,13 @@ class AuthenticationRepository {
     try {
       final uri = AuthNetworking.createNewUserUri;
       final customOptions = await getCustomOptions();
+
       final response = await _client.postUri(
         uri,
         data: {
-          "email":newUser.email,
-          "avatar":newUser.avatar,
-          "fullname":newUser.fullname
+          "email": newUser.email,
+          "avatar": newUser.avatar,
+          "fullname": newUser.fullname
         },
         options: commonOptionsWithCustom(customOptions: customOptions),
       );
@@ -39,10 +42,9 @@ class AuthenticationRepository {
     try {
       final uri = AuthNetworking.getUserDataUri;
       final customOptions = await getCustomOptions();
-      final response = await _client.getUri(
-        uri,
-        options: commonOptionsWithCustom(customOptions: customOptions)
-      );
+      log(customOptions.token!);
+      final response = await _client.getUri(uri,
+          options: commonOptionsWithCustom(customOptions: customOptions));
       final data = response.data['user'] as Map<String, dynamic>;
       final user = UserModel.fromJson(data);
       return user;
@@ -54,10 +56,7 @@ class AuthenticationRepository {
 
   Future<User?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn(
-
-        
-      );
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       // Obtain the auth details from the request
       final GoogleSignInAuthentication? googleAuth =

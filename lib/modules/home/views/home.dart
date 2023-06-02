@@ -1,20 +1,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shca/core/helpers/navigation.dart';
+import 'package:shca/modules/home/blocs/fetchGroupsCubit/fetch_groups_cubit.dart';
+import 'package:shca/modules/home/blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
+import 'package:shca/modules/home/models/interface.dart';
+import 'package:shca/modules/home/views/all_devices.dart';
 import 'package:shca/modules/home/views/all_rooms.dart';
 import 'package:shca/modules/home/views/single_room.dart';
+import 'package:shca/modules/scences/blocs/fetchScences/fetch_scences_cubit.dart';
+import 'package:shca/widgets/widgets.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:utilities/utilities.dart';
 
 import '../../../core/helpers/style_config.dart';
+import '../models/group.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const _HomeView();
+    return MultiBlocProvider(providers: [
+      BlocProvider(
+          create: (context) =>
+              FetchGroupsCubit(context.read())..fetchMyGroups()),
+      BlocProvider(
+          create: (context) =>
+              FetchInterfacesCubit(context.read())..fetchInterfaces()),
+      BlocProvider(
+          create: (context) =>
+              FetchScencesCubit(context.read())..fetchMyScences()),
+    ], child: const _HomeView());
   }
 }
 
@@ -29,7 +47,6 @@ class _HomeView extends StatelessWidget {
         child: Column(
           children: [
             const Space.v10(),
-            
             ListView.separated(
               physics: const NeverScrollableScrollPhysics(),
               itemCount: 1,
@@ -37,50 +54,106 @@ class _HomeView extends StatelessWidget {
               itemBuilder: (context, index) => const ScenceItem(),
               separatorBuilder: ((context, index) => const Space.v10()),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Rooms",
-                  style: Style.appTheme.textTheme.bodyLarge,
-                ),
-                TextButton(
-                    onPressed: () => context.navigateTo(const AllRoomsScreen()),
-                    child: const Text("See All Rooms"))
-              ],
+            BlocBuilder<FetchGroupsCubit, FetchGroupsState>(
+              builder: (context, state) {
+                if (state is FetchGroupsFailed) {
+                  return ErrorViewer(state.e!);
+                } else if (state is FetchGroupsSucceeded) {
+                  final groups = state.groups;
+                  if (groups.isEmpty) {
+                    return const NoDataView();
+                  }
+                  return Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Rooms",
+                            style: Style.appTheme.textTheme.bodyLarge,
+                          ),
+                          TextButton(
+                              onPressed: () =>
+                                  context.navigateTo(AllRoomsScreen(
+                                    groups: groups,
+                                  )),
+                              child: const Text("See All Rooms"))
+                        ],
+                      ),
+                      GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 4,
+                                  childAspectRatio: 3 / 4,
+                                  crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5),
+                          itemCount: groups.length > 4 ? 4 : groups.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: ((context, index) => RoomItem(
+                              onTap: () => context.navigateTo(
+                                    SingleRoomScreen(
+                                      group: groups[index],
+                                      groups: groups,
+                                    ),
+                                  ),
+                              group: groups[index],
+                              color: getRandomColor(
+                                      seed: (groups[index].id).toString())
+                                  .color))),
+                    ],
+                  );
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              },
             ),
-            GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    childAspectRatio: 3 / 4,
-                    crossAxisSpacing: 5,
-                    mainAxisSpacing: 5),
-                itemCount: 4,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: ((context, index) => RoomItem(
-                    color:
-                        getRandomColor(seed: (index + 4).toString()).color))),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Devices",
-                  style: Style.appTheme.textTheme.bodyLarge,
-                ),
-                TextButton(
-                    onPressed: () {}, child: const Text("See All Devices"))
-              ],
+            BlocBuilder<FetchInterfacesCubit, FetchInterfacesState>(
+              builder: (context, state) {
+                if (state is FetchInterfacesFailed) {
+                  return ErrorViewer(state.e!);
+                } else if (state is FetchInterfacesSucceeded) {
+                  final interfaces = state.interfaces;
+                  if (interfaces.isEmpty) {
+                    return const NoDataView();
+                  }
+                  return Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Devices",
+                            style: Style.appTheme.textTheme.bodyLarge,
+                          ),
+                          TextButton(
+                              onPressed: () =>
+                                  context.navigateTo(AllDevicesScreen(
+                                    interfaces: state.interfaces,
+                                  )),
+                              child: const Text("See All Devices"))
+                        ],
+                      ),
+                      GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5),
+                          itemCount: 2,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: ((context, index) => DeviceItem(
+                              interface: interfaces[index],
+                              color: getRandomColor(
+                                      seed: (index + 80967).toString())
+                                  .color))),
+                    ],
+                  );
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
             ),
-            GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, crossAxisSpacing: 5, mainAxisSpacing: 5),
-                itemCount: 2,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: ((context, index) => DeviceItem(
-                    color: getRandomColor(seed: (index + 80967).toString())
-                        .color))),
             const Space.v40()
           ],
         ),
@@ -160,15 +233,19 @@ class RoomItem extends StatelessWidget {
   const RoomItem({
     Key? key,
     required this.color,
+    required this.group,
+    required this.onTap,
   }) : super(key: key);
 
   final Color color;
+  final Group group;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(10),
-      onTap: () => context.navigateTo(const SingleRoomScreen()),
+      onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
             color: color, borderRadius: BorderRadius.circular(10)),
@@ -185,12 +262,12 @@ class RoomItem extends StatelessWidget {
             ),
           ),
           Text(
-            "Bed Room",
+            group.name,
             style: Style.appTheme.textTheme.bodyLarge!
                 .copyWith(height: 1.5, color: Colors.white),
           ),
           Text(
-            "5 Devices",
+            "${group.interfaces.length} Devices",
             style: Style.appTheme.textTheme.bodySmall!
                 .copyWith(height: 1.5, color: Colors.white70),
           )
@@ -201,12 +278,13 @@ class RoomItem extends StatelessWidget {
 }
 
 class DeviceItem extends StatelessWidget {
+  final Interface interface;
+  final Color color;
   const DeviceItem({
     Key? key,
     required this.color,
+    required this.interface,
   }) : super(key: key);
-
-  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -233,12 +311,12 @@ class DeviceItem extends StatelessWidget {
                     children: [
                       Switch(value: true, onChanged: (value) {}),
                       Text(
-                        "Lamp1",
+                        interface.name,
                         style: Style.appTheme.textTheme.bodyLarge!
                             .copyWith(height: 1.5, color: Colors.white),
                       ),
                       Text(
-                        "BedRoom",
+                        interface.board!.name,
                         style: Style.appTheme.textTheme.bodyMedium!
                             .copyWith(height: 1.5, color: Colors.white70),
                       )

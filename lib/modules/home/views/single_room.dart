@@ -1,11 +1,19 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
+import 'package:shca/modules/home/blocs/fetchGroupInterfaces/fetch_group_interfaces_cubit.dart';
+import 'package:shca/modules/home/models/group.dart';
+import 'package:shca/modules/home/views/add_devices.dart';
 import 'package:shca/modules/home/views/home.dart';
 import 'package:shca/widgets/back_button.dart';
 import 'package:shca/widgets/custom_button.dart';
 import 'package:utilities/utilities.dart';
+
+import '../../../widgets/error_viewer.dart';
+import '../../../widgets/no_data.dart';
 
 List<String> avatars = [
   "https://i.pinimg.com/564x/0c/aa/41/0caa41582819fb21fb51439b9b8dc893.jpg",
@@ -14,7 +22,39 @@ List<String> avatars = [
 ];
 
 class SingleRoomScreen extends StatelessWidget {
-  const SingleRoomScreen({super.key});
+  final Group group;
+  final List<Group> groups;
+  const SingleRoomScreen(
+      {super.key, required this.group, required this.groups});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => FetchGroupInterfacesCubit(context.read())
+        ..fetchGroupInterfaces(group.id),
+      child: _SingleRoomView(group: group, groups: groups),
+    );
+  }
+}
+
+class _SingleRoomView extends StatefulWidget {
+  final Group group;
+  final List<Group> groups;
+  const _SingleRoomView({required this.group, required this.groups});
+
+  @override
+  State<_SingleRoomView> createState() => __SingleRoomViewState();
+}
+
+class __SingleRoomViewState extends State<_SingleRoomView> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    _controller = TextEditingController(text: widget.group.name);
+    
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +63,12 @@ class SingleRoomScreen extends StatelessWidget {
         leading: const MyBackButton(),
         title: CustomDropdown.search(
           hintText: 'Select Room',
-          items: const ['Bed Room', 'Kitchen', 'Bath Room', 'Salon'],
-          controller: TextEditingController(text: "Bed Room"),
+          items: widget.groups.map((e) => e.name).toList(),
+          controller: _controller,
+          onChanged: (groupName)=>context.read<FetchGroupInterfacesCubit>().fetchGroupInterfaces(widget
+          .groups
+          .firstWhere((element) => element.name == groupName)
+          .id),
         ),
         actions: [
           Padding(
@@ -32,9 +76,11 @@ class SingleRoomScreen extends StatelessWidget {
             child: SizedBox(
                 width: 100,
                 child: CustomButton(
-                    onPressed: () {}, child: const Text("Add Device"))),
+                    onPressed: () => context.navigateTo(AddDevicesScreen(
+                        group: widget.groups.firstWhere(
+                            (element) => element.name == _controller.text))),
+                    child: const Text("Add Devices"))),
           ),
-          // IconButton(onPressed: () {}, icon: Icon(CupertinoIcons.add))
         ],
       ),
       body: SingleChildScrollView(
@@ -107,23 +153,39 @@ class SingleRoomScreen extends StatelessWidget {
                             .copyWith(height: 1.2),
                       )),
                       const Space.h15(),
-                      Icon(CupertinoIcons.forward)
+                      const Icon(CupertinoIcons.forward)
                     ],
                   ),
                 ),
               ),
               const Space.v10(),
-              GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 5,
-                      mainAxisSpacing: 5),
-                  itemCount: 3,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: ((context, index) => DeviceItem(
-                      color: getRandomColor(seed: (index + 80967).toString())
-                          .color))),
+             BlocBuilder<FetchGroupInterfacesCubit, FetchGroupInterfacesState>(
+              builder: (context, state) {
+                if (state is FetchGroupInterfacesFailed) {
+                  return ErrorViewer(state.e!);
+                } else if (state is FetchGroupInterfacesSucceeded) {
+                  final interfaces = state.interfaces;
+                  if (interfaces.isEmpty) {
+                    return const NoDataView();
+                  }
+                  return GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 5,
+                              mainAxisSpacing: 5),
+                      itemCount: interfaces.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: ((context, index) => DeviceItem(
+                          interface: interfaces[index],
+                          color: getRandomColor(
+                                  seed: (index + 80967).toString())
+                              .color)));
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
+            ),
             ],
           ),
         ),

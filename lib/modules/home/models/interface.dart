@@ -11,9 +11,9 @@ class Interface extends Equatable {
   final String id;
 
   final String name;
-  final Board board;
+  final Board? board;
   final String type;
-  final int value;
+  final int? value;
 
   const Interface({
     required this.id,

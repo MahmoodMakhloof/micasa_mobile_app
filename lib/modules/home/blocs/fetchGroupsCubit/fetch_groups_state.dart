@@ -8,19 +8,15 @@ abstract class FetchGroupsState extends Equatable {
 }
 
 class FetchGroupsInitial extends FetchGroupsState {}
-class FetchGroupsInProgress extends FetchGroupsState {
-  
-}
+
+class FetchGroupsInProgress extends FetchGroupsState {}
 
 class FetchGroupsSucceeded extends FetchGroupsState {
-  final List<Group>? groups;
-  
+  final List<Group> groups;
 
   const FetchGroupsSucceeded({
     required this.groups,
   });
-
- 
 
   @override
   List<Object?> get props => [groups];

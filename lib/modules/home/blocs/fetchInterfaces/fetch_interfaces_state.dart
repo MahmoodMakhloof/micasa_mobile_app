@@ -13,7 +13,7 @@ class FetchInterfacesInProgress extends FetchInterfacesState {
 }
 
 class FetchInterfacesSucceeded extends FetchInterfacesState {
-  final List<Interface>? interfaces;
+  final List<Interface> interfaces;
   
 
   const FetchInterfacesSucceeded({

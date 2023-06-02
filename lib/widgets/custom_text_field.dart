@@ -65,6 +65,7 @@ class CTextField extends StatefulWidget {
 
   final TextDirection? textDirection;
   final int? maxLines;
+  final Color? fillColor;
 
   ///Creates a [FormField] that contains a custom feel.
   ///
@@ -89,6 +90,7 @@ class CTextField extends StatefulWidget {
     this.textDirection,
     this.onChanged,
     this.maxLines,
+    this.fillColor,
   }) : super(key: key);
 
   @override
@@ -150,7 +152,8 @@ class _CTextFieldState extends State<CTextField> {
       textDirection: widget.textDirection,
       cursorColor: CColors.primary,
       textCapitalization: widget.textCapitalization,
-      style: context.theme.textTheme.bodyLarge!.copyWith(color: CColors.black70),
+      style:
+          context.theme.textTheme.bodyLarge!.copyWith(color: CColors.black70),
       inputFormatters: [
         if (widget.inputFormatters != null) ...widget.inputFormatters!,
         if (widget.automaticallyImplyDigitsOnlyFilter && _isNumberBased)
@@ -171,7 +174,7 @@ class _CTextFieldState extends State<CTextField> {
       //           color: Colors.redAccent,
       // ),
       filled: true,
-      fillColor: Colors.grey.shade200,
+      fillColor: widget.fillColor ?? Colors.grey.shade100,
       border: _buildInputBorder(),
       focusedBorder: _buildInputBorder(),
       enabledBorder: _buildInputBorder(),

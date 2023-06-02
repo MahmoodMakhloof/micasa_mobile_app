@@ -15,8 +15,10 @@ Interface _$InterfaceFromJson(Map<String, dynamic> json) => $checkedCreate(
           name: $checkedConvert('name', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
           board: $checkedConvert(
-              'board', (v) => Board.fromJson(v as Map<String, dynamic>)),
-          value: $checkedConvert('value', (v) => v as int),
+              'board',
+              (v) =>
+                  v == null ? null : Board.fromJson(v as Map<String, dynamic>)),
+          value: $checkedConvert('value', (v) => v as int?),
         );
         return val;
       },
@@ -26,7 +28,7 @@ Interface _$InterfaceFromJson(Map<String, dynamic> json) => $checkedCreate(
 Map<String, dynamic> _$InterfaceToJson(Interface instance) => <String, dynamic>{
       '_id': instance.id,
       'name': instance.name,
-      'board': instance.board.toJson(),
+      'board': instance.board?.toJson(),
       'type': instance.type,
       'value': instance.value,
     };

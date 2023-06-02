@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:shca/modules/scences/models/Scence.dart';
+import 'package:shca/modules/scences/models/scence.dart';
 import 'package:shca/modules/scences/utils/networking.dart';
 import 'package:utilities/utilities.dart';
 

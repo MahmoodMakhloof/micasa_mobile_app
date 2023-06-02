@@ -1,13 +1,38 @@
-import 'package:animated_custom_dropdown/custom_dropdown.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shca/core/helpers/navigation.dart';
+import 'package:shca/core/helpers/style_config.dart';
+import 'package:shca/modules/home/blocs/createGroup/create_group_cubit.dart';
+import 'package:shca/modules/home/models/group.dart';
 import 'package:shca/modules/home/views/home.dart';
+import 'package:shca/modules/home/views/single_room.dart';
 import 'package:shca/widgets/back_button.dart';
 import 'package:shca/widgets/widgets.dart';
 import 'package:utilities/utilities.dart';
 
 class AllRoomsScreen extends StatelessWidget {
-  const AllRoomsScreen({super.key});
+  final List<Group> groups;
+  const AllRoomsScreen({super.key, required this.groups});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => CreateGroupCubit(context.read()),
+      child:  _AllRoomsView(groups),
+    );
+  }
+}
+
+class _AllRoomsView extends StatefulWidget {
+    final List<Group> groups;
+  const _AllRoomsView(this.groups);
+
+  @override
+  State<_AllRoomsView> createState() => _AllRoomsViewState();
+}
+
+class _AllRoomsViewState extends State<_AllRoomsView> {
+  final TextEditingController _roomNameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +46,44 @@ class AllRoomsScreen extends StatelessWidget {
             child: SizedBox(
                 width: 100,
                 child: TextButton(
-                    onPressed: () {}, child: const Text("Add Room"))),
+                    onPressed: () => showDialog(
+                        context: context,
+                        builder: (_) => Dialog(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Adding Room',
+                                      style:
+                                          Style.appTheme.textTheme.titleLarge,
+                                    ),
+                                    const Space.v10(),
+                                    CTextField(
+                                        hint: "Room Name",
+                                        controller: _roomNameController),
+                                    const Space.v10(),
+                                    CustomButton(
+                                        onPressed: () {
+                                          if (_roomNameController
+                                              .text.isNotEmpty) {
+                                            context
+                                                .read<CreateGroupCubit>()
+                                                .createNewGroup(
+                                                    _roomNameController.text);
+                                            _roomNameController.clear();
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                        child: const Text("Confirm"))
+                                  ],
+                                ),
+                              ),
+                            )),
+                    child: const Text("Add Room"))),
           ),
           // IconButton(onPressed: () {}, icon: Icon(CupertinoIcons.add))
         ],
@@ -32,11 +94,13 @@ class AllRoomsScreen extends StatelessWidget {
               childAspectRatio: 3 / 4,
               crossAxisSpacing: 5,
               mainAxisSpacing: 5),
-          padding: EdgeInsets.all(10),
-          itemCount: 5,
+          padding: const EdgeInsets.all(10),
+          itemCount: widget.groups.length,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: ((context, index) => RoomItem(
+            group: widget.groups[index],
+            onTap: ()=> context.navigateTo(SingleRoomScreen(group: widget.groups[index], groups: widget.groups)),
               color: getRandomColor(seed: (index + 4).toString()).color))),
     );
   }
