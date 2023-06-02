@@ -72,6 +72,9 @@ class $AssetsImagesVectorsGen {
   /// File path: assets/images/vectors/bell.svg
   SvgGenImage get bell => const SvgGenImage('assets/images/vectors/bell.svg');
 
+  /// File path: assets/images/vectors/board.svg
+  SvgGenImage get board => const SvgGenImage('assets/images/vectors/board.svg');
+
   /// File path: assets/images/vectors/bookmark.svg
   SvgGenImage get bookmark =>
       const SvgGenImage('assets/images/vectors/bookmark.svg');
@@ -190,6 +193,7 @@ class $AssetsImagesVectorsGen {
         apps,
         barsStaggered,
         bell,
+        board,
         bookmark,
         bulb,
         calendar,

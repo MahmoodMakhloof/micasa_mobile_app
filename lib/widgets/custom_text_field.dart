@@ -60,12 +60,15 @@ class CTextField extends StatefulWidget {
 
   final Widget? suffixIcon;
   final Widget? prefixIcon;
+  final double? fontSize;
 
   final Function(String)? onChanged;
 
   final TextDirection? textDirection;
   final int? maxLines;
   final Color? fillColor;
+  final bool? filled;
+  final bool? autoFocus;
 
   ///Creates a [FormField] that contains a custom feel.
   ///
@@ -91,6 +94,8 @@ class CTextField extends StatefulWidget {
     this.onChanged,
     this.maxLines,
     this.fillColor,
+    this.filled,
+    this.autoFocus, this.fontSize,
   }) : super(key: key);
 
   @override
@@ -152,8 +157,8 @@ class _CTextFieldState extends State<CTextField> {
       textDirection: widget.textDirection,
       cursorColor: CColors.primary,
       textCapitalization: widget.textCapitalization,
-      style:
-          context.theme.textTheme.bodyLarge!.copyWith(color: CColors.black70),
+      style: context.theme.textTheme.bodyLarge!
+          .copyWith(color: CColors.black70, fontSize: widget.fontSize),
       inputFormatters: [
         if (widget.inputFormatters != null) ...widget.inputFormatters!,
         if (widget.automaticallyImplyDigitsOnlyFilter && _isNumberBased)
@@ -161,7 +166,7 @@ class _CTextFieldState extends State<CTextField> {
       ],
       maxLength: widget.maxLength,
       decoration: _buildDecoration(),
-      autofocus: false,
+      autofocus: widget.autoFocus ?? false,
     );
   }
 
@@ -173,7 +178,7 @@ class _CTextFieldState extends State<CTextField> {
       //     Style.appTextTheme(context).caption?.copyWith(
       //           color: Colors.redAccent,
       // ),
-      filled: true,
+      filled: widget.filled ?? false,
       fillColor: widget.fillColor ?? Colors.grey.shade100,
       border: _buildInputBorder(),
       focusedBorder: _buildInputBorder(),
@@ -190,13 +195,7 @@ class _CTextFieldState extends State<CTextField> {
   }
 
   InputBorder _buildInputBorder() {
-    return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(5),
-      borderSide: BorderSide(
-        color: Colors.grey.shade200,
-        width: 0,
-      ),
-    );
+    return const OutlineInputBorder(borderSide: BorderSide.none);
   }
 
   Widget? _buildSuffixIcon() {

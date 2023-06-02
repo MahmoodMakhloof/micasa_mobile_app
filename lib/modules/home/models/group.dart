@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:shca/modules/auth/models/user.dart';
-import 'package:shca/modules/home/models/interface.dart';
 
 part 'group.g.dart';
 
@@ -33,4 +32,20 @@ class Group extends Equatable {
         name,
         admin
       ];
+
+  Group copyWith({
+    String? id,
+    String? name,
+    List<String>? interfaces,
+    List<UserModel>? users,
+    UserModel? admin,
+  }) {
+    return Group(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      interfaces: interfaces ?? this.interfaces,
+      users: users ?? this.users,
+      admin: admin ?? this.admin,
+    );
+  }
 }

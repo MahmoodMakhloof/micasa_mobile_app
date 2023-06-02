@@ -1,5 +1,7 @@
 import 'package:utilities/utilities.dart';
 
+import '../blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
+
 class HomeNetworking {
   HomeNetworking._();
   // group primary uri
@@ -17,6 +19,20 @@ class HomeNetworking {
 
   // interface primary uri
   static Uri get _interfaceUri => Network.siteUri.addSegment("/interface");
-  static Uri get getMyInterfaces =>
-      _interfaceUri.addSegment("/getUserInterfaces");
+  static Future<Uri> getMyInterfaces(
+      {required InterfacesScope scope,
+      String? text,
+      String? groupId,
+      String? boardId}) async {
+    List<QueryParam> querys = [];
+    querys.add(QueryParam(param: "text", value: text ?? ''));
+    if (groupId != null) {
+      querys.add(QueryParam(param: "groupId", value: groupId));
+    }
+    if (boardId != null) {
+      querys.add(QueryParam(param: "boardId", value: boardId));
+    }
+    return _interfaceUri.addSegment("/getUserInterfaces").addQueryParams(
+        [QueryParam(param: "scope", value: scope.toStr()), ...querys]);
+  }
 }

@@ -11,11 +11,11 @@ import 'package:shca/generated/locale_keys.g.dart';
 import 'package:shca/modules/boards/views/boards.dart';
 import 'package:shca/modules/home/views/home.dart';
 import 'package:shca/modules/profile/views/profile.dart';
-import 'package:shca/modules/scences/views/scences.dart';
-import 'package:shca/modules/schedules/views/schedules.dart';
 import 'package:shca/modules/speech/views/speech_view.dart';
 
 import '../modules/auth/blocs/get_user_data_cubit/get_user_data_cubit.dart';
+import '../modules/events/views/scences.dart';
+import '../modules/events/views/schedules.dart';
 
 class Root extends StatefulWidget {
   const Root({Key? key}) : super(key: key);

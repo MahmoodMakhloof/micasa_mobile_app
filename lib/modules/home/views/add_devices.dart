@@ -24,8 +24,9 @@ class AddDevicesScreen extends StatelessWidget {
           BlocProvider(
               create: (context) => AddInterfacesToGroupCubit(context.read())),
           BlocProvider(
-              create: (context) =>
-                  FetchInterfacesCubit(context.read())..fetchInterfaces()),
+              create: (context) => FetchInterfacesCubit(context.read())
+                ..fetchInterfaces(
+                    scope: InterfacesScope.toGroup, groupId: group.id)),
         ],
         child: _AddDevicesView(
           group: group,
@@ -49,7 +50,6 @@ class _AddDevicesViewState extends State<_AddDevicesView> {
 
   final List<Interface> _selectedInterfaces = [];
 
-  List<Interface> _filteredInterfaces = [];
 
   @override
   Widget build(BuildContext context) {
@@ -62,11 +62,9 @@ class _AddDevicesViewState extends State<_AddDevicesView> {
             controller: _controller,
             hint: "Search Devices",
             onChanged: (value) {
-              setState(() {
-                _filteredInterfaces = _filteredInterfaces
-                    .where((element) => element.name.contains(value))
-                    .toList();
-              });
+              context
+                  .read<FetchInterfacesCubit>()
+                  .fetchInterfaces(scope: InterfacesScope.toGroup,groupId: widget.group.id, text: value);
             },
           ),
         ),
@@ -75,14 +73,27 @@ class _AddDevicesViewState extends State<_AddDevicesView> {
             padding: const EdgeInsets.all(10.0),
             child: SizedBox(
                 width: 100,
-                child: CustomButton(
-                    enabled: _selectedInterfaces.isNotEmpty,
-                    onPressed: () => context.read<AddInterfacesToGroupCubit>()
-                      ..addInterfacesToGroup(
-                          groupId: widget.group.id,
-                          interfacesIds:
-                              _selectedInterfaces.map((e) => e.id).toList()),
-                    child: const Text("Add"))),
+                child: BlocConsumer<AddInterfacesToGroupCubit,
+                    AddInterfacesToGroupState>(
+                  listener: (context, state) {
+                    if (state is AddInterfacesToGroupSucceeded) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  builder: (context, state) {
+                    return CustomButton(
+                        isLoading: state is AddInterfacesToGroupInProgress,
+                        enabled: _selectedInterfaces.isNotEmpty,
+                        onPressed: () =>
+                            context.read<AddInterfacesToGroupCubit>()
+                              ..addInterfacesToGroup(
+                                  groupId: widget.group.id,
+                                  interfacesIds: _selectedInterfaces
+                                      .map((e) => e.id)
+                                      .toList()),
+                        child: const Text("Add"));
+                  },
+                )),
           ),
         ],
       ),
@@ -96,12 +107,12 @@ class _AddDevicesViewState extends State<_AddDevicesView> {
                   if (state is FetchInterfacesFailed) {
                     return ErrorViewer(state.e!);
                   } else if (state is FetchInterfacesSucceeded) {
-                    _filteredInterfaces = state.interfaces
+                    final interfaces = state.interfaces
                         .where((element) =>
                             !widget.group.interfaces.contains(element.id))
                         .toList();
 
-                    if (_filteredInterfaces.isEmpty) {
+                    if (interfaces.isEmpty) {
                       return const NoDataView();
                     }
                     return Column(
@@ -113,28 +124,28 @@ class _AddDevicesViewState extends State<_AddDevicesView> {
                                     crossAxisSpacing: 5,
                                     childAspectRatio: 100 / 60,
                                     mainAxisSpacing: 5),
-                            itemCount: _filteredInterfaces.length,
+                            itemCount: interfaces.length,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: ((context, index) => DeviceSelectItem(
                                 selected: _selectedInterfaces
-                                    .contains(_filteredInterfaces[index]),
-                                interface: _filteredInterfaces[index],
+                                    .contains(interfaces[index]),
+                                interface: interfaces[index],
                                 onChanged: (selected) {
                                   if (selected ?? false) {
                                     setState(() {
                                       _selectedInterfaces
-                                          .add(_filteredInterfaces[index]);
+                                          .add(interfaces[index]);
                                     });
                                   } else {
                                     setState(() {
                                       _selectedInterfaces
-                                          .remove(_filteredInterfaces[index]);
+                                          .remove(interfaces[index]);
                                     });
                                   }
                                 },
                                 color: getRandomColor(
-                                        seed: (_filteredInterfaces[index])
+                                        seed: (interfaces[index])
                                             .toString())
                                     .color))),
                       ],

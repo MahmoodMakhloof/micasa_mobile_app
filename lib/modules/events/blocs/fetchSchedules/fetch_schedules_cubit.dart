@@ -1,14 +1,15 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:shca/modules/schedules/models/schedule.dart';
-import 'package:shca/modules/schedules/repositories/schedule_repository.dart';
+import 'package:shca/modules/events/repositories/events_repository.dart';
 import 'package:utilities/utilities.dart';
+
+import '../../models/schedule.dart';
 
 
 part 'fetch_schedules_state.dart';
 
 class FetchSchedulesCubit extends Cubit<FetchSchedulesState> {
-  final ScheduleRepository _scheduleRepository;
+  final EventsRepository _scheduleRepository;
   FetchSchedulesCubit(this._scheduleRepository) : super(FetchSchedulesInitial());
 
   void fetchMySchedules() async {

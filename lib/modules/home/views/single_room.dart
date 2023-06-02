@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
-import 'package:shca/modules/home/blocs/fetchGroupInterfaces/fetch_group_interfaces_cubit.dart';
+import 'package:shca/modules/home/blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
 import 'package:shca/modules/home/models/group.dart';
 import 'package:shca/modules/home/views/add_devices.dart';
 import 'package:shca/modules/home/views/home.dart';
@@ -30,8 +30,8 @@ class SingleRoomScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => FetchGroupInterfacesCubit(context.read())
-        ..fetchGroupInterfaces(group.id),
+      create: (context) => FetchInterfacesCubit(context.read())
+        ..fetchInterfaces(scope: InterfacesScope.inGroup,groupId: group.id),
       child: _SingleRoomView(group: group, groups: groups),
     );
   }
@@ -65,8 +65,8 @@ class __SingleRoomViewState extends State<_SingleRoomView> {
           hintText: 'Select Room',
           items: widget.groups.map((e) => e.name).toList(),
           controller: _controller,
-          onChanged: (groupName)=>context.read<FetchGroupInterfacesCubit>().fetchGroupInterfaces(widget
-          .groups
+          onChanged: (groupName)=>context.read<FetchInterfacesCubit>().fetchInterfaces(scope: InterfacesScope.inGroup,groupId:
+          widget.groups
           .firstWhere((element) => element.name == groupName)
           .id),
         ),
@@ -159,11 +159,11 @@ class __SingleRoomViewState extends State<_SingleRoomView> {
                 ),
               ),
               const Space.v10(),
-             BlocBuilder<FetchGroupInterfacesCubit, FetchGroupInterfacesState>(
+             BlocBuilder<FetchInterfacesCubit, FetchInterfacesState>(
               builder: (context, state) {
-                if (state is FetchGroupInterfacesFailed) {
+                if (state is FetchInterfacesFailed) {
                   return ErrorViewer(state.e!);
-                } else if (state is FetchGroupInterfacesSucceeded) {
+                } else if (state is FetchInterfacesSucceeded) {
                   final interfaces = state.interfaces;
                   if (interfaces.isEmpty) {
                     return const NoDataView();

@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:shca/generated/assets.gen.dart';
 import 'package:shca/modules/boards/blocs/connectBoard/connect_board_cubit.dart';
+import 'package:shca/widgets/back_button.dart';
 import 'package:utilities/utilities.dart';
 
 import '../../../core/helpers/style_config.dart';
@@ -36,57 +38,39 @@ class __QrScannerViewState extends State<_QrScannerView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Connect New Board"),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-                onPressed: () async {
-                  await controller?.toggleFlash();
-                  setState(() {});
-                },
-                icon: FutureBuilder(
-                  future: controller?.getFlashStatus(),
-                  builder: (context, snapshot) {
-                    return snapshot.data ?? false
-                        ? const Icon(
-                            Icons.flash_on,
-                            size: 25,
-                          )
-                        : const Icon(
-                            Icons.flash_off,
-                            size: 25,
-                          );
-                  },
-                )),
-          ),
-        ],
+        backgroundColor: CColors.primary,
+        leading: const MyBackButton(
+          color: Colors.white,
+        ),
+        title: const Text(
+          "QR Scanner",
+          style: TextStyle(color: Colors.white),
+        ),
+        actions: [],
       ),
       body: Column(
         children: <Widget>[
           Expanded(flex: 5, child: _buildQrView(context)),
           Expanded(
             flex: 1,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                if (result != null)
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        const CircularProgressIndicator(),
-                        const Space.v10(),
-                        Text(
-                          'Token: ${result!.code}',
-                        ),
-                      ],
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.indigo,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: ListTile(
+                  leading: Assets.images.vectors.scan.svg(height: 70),
+                  title: Text(
+                    "Connect new boards by scanning QR code on it.",
+                    style: Style.appTheme.textTheme.titleMedium!.copyWith(
+                      color: Colors.white,
+                      fontSize: 17,
+                      height: 1.5,
                     ),
-                  )
-                else
-                  const Text(
-                      'Scan QR code on the board to connect and control it'),
-              ],
+                  ),
+                ),
+              ),
             ),
           )
         ],
@@ -102,16 +86,47 @@ class __QrScannerViewState extends State<_QrScannerView> {
         : 400.0;
     // To ensure the Scanner view is properly sizes after rotation
     // we need to listen for Flutter SizeChanged notification and update controller
-    return QRView(
-      key: qrKey,
-      onQRViewCreated: _onQRViewCreated,
-      overlay: QrScannerOverlayShape(
-          borderColor: CColors.primary,
-          borderRadius: 10,
-          borderLength: 30,
-          borderWidth: 10,
-          cutOutSize: scanArea),
-      onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
+    return Stack(
+      alignment: AlignmentDirectional.bottomStart,
+      children: [
+        /////////
+        QRView(
+          key: qrKey,
+          onQRViewCreated: _onQRViewCreated,
+          overlay: QrScannerOverlayShape(
+              borderColor: CColors.primary,
+              borderRadius: 10,
+              borderLength: 30,
+              borderWidth: 10,
+              cutOutSize: scanArea),
+          onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
+        ),
+
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: IconButton(
+              onPressed: () async {
+                await controller?.toggleFlash();
+                setState(() {});
+              },
+              icon: FutureBuilder(
+                future: controller?.getFlashStatus(),
+                builder: (context, snapshot) {
+                  return snapshot.data ?? false
+                      ? const Icon(
+                          Icons.flash_on,
+                          color: Colors.white,
+                          size: 25,
+                        )
+                      : const Icon(
+                          Icons.flash_off,
+                          color: Colors.white,
+                          size: 25,
+                        );
+                },
+              )),
+        ),
+      ],
     );
   }
 

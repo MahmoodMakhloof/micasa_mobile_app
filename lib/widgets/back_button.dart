@@ -2,14 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MyBackButton extends StatelessWidget {
-  const MyBackButton({super.key});
+  final Color? color;
+  const MyBackButton({super.key, this.color});
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
         onPressed: () => Navigator.pop(context),
-        icon: const Icon(
+        icon: Icon(
           CupertinoIcons.arrow_left,
+          color: color,
         ));
   }
 }

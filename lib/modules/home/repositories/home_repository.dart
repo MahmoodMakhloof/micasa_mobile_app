@@ -5,6 +5,7 @@ import 'package:utilities/utilities.dart';
 
 import '../../../core/helpers/auth.dart';
 import '../../../core/helpers/networking.dart';
+import '../blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
 import '../utils/networking.dart';
 
 class HomeRepository {
@@ -29,17 +30,16 @@ class HomeRepository {
     }
   }
 
-
   Future<Group> createNewGroup(String name) async {
     try {
       final uri = HomeNetworking.createNewGroup;
       final customOptions = await getCustomOptions();
       final response = await _client.postUri(
         uri,
-        data: {"name":name},
+        data: {"name": name},
         options: commonOptionsWithCustom(customOptions: customOptions),
       );
-      final data = response.data['group'] ;
+      final data = response.data['group'];
       final group = Group.fromJson(data);
       return group;
     } on DioError catch (e) {
@@ -48,16 +48,17 @@ class HomeRepository {
     }
   }
 
-   Future<Group> addInterfacesToGroup(List<String> interfacesIds,String groupId) async {
+  Future<Group> addInterfacesToGroup(
+      List<String> interfacesIds, String groupId) async {
     try {
       final uri = HomeNetworking.addInterfacesToGroup;
       final customOptions = await getCustomOptions();
       final response = await _client.patchUri(
         uri,
-        data: {"interfacesIds":interfacesIds,"groupId":groupId},
+        data: {"interfacesIds": interfacesIds, "groupId": groupId},
         options: commonOptionsWithCustom(customOptions: customOptions),
       );
-      final data = response.data['group'] ;
+      final data = response.data['group'];
       final group = Group.fromJson(data);
       return group;
     } on DioError catch (e) {
@@ -66,9 +67,14 @@ class HomeRepository {
     }
   }
 
-  Future<List<Interface>> fetchMyInterfaces() async {
+  Future<List<Interface>> fetchMyInterfaces(
+      {required InterfacesScope scope,
+      String? text,
+      String? groupId,
+      String? boardId}) async {
     try {
-      final uri = HomeNetworking.getMyInterfaces;
+      final uri = await HomeNetworking.getMyInterfaces(
+          scope: scope, text: text, groupId: groupId, boardId: boardId);
       final customOptions = await getCustomOptions();
       final response = await _client.getUri(
         uri,
@@ -91,7 +97,6 @@ class HomeRepository {
       final response = await _client.getUri(
         uri,
         options: commonOptionsWithCustom(customOptions: customOptions),
-        
       );
       final data = response.data['interfaces'] as List;
       final interfaces =

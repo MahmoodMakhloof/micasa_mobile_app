@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:shca/modules/events/models/scence.dart';
 
 part 'schedule.g.dart';
 
@@ -12,7 +13,7 @@ class Schedule extends Equatable {
   final bool repeated;
   final List days;
   final String time;
-  final Map events;
+  final List<Event> events;
   const Schedule({
     required this.id,
     required this.name,

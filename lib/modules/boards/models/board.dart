@@ -36,7 +36,7 @@ class BoardModel extends Equatable {
   final String id;
   final String description;
   final String name;
-  final List<InterfaceType> map;
+  final List<InterfaceType>? map;
 
   const BoardModel({
     required this.id,

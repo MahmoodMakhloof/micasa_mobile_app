@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/modules/boards/blocs/fetchBoards/fetch_boards_cubit.dart';
+import 'package:shca/modules/boards/views/board_details.dart';
 import 'package:shca/modules/boards/views/qr_scanner.dart';
 import 'package:shca/widgets/widgets.dart';
 import 'package:utilities/utilities.dart';
@@ -113,37 +114,47 @@ class BoardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade200),
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10)),
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: ListTile(
-            leading: const Icon(CupertinoIcons.wifi),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return InkWell(
+      onTap: () => context.navigateTo(BoardDetailsScreen(board: board)),
+      child: Container(
+          decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade200),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10)),
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Row(
               children: [
-                Text(board.name),
-                Text(
-                  "${board.model!.map.length} Devices",
-                  style:
-                      Style.appTheme.textTheme.bodySmall!.copyWith(height: 1),
+                Assets.images.vectors.board.svg(height: 50),
+                Space.h30(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(board.name),
+                    Text(
+                      "${board.model!.map!.length} Devices",
+                      style: Style.appTheme.textTheme.bodySmall!
+                          .copyWith(height: 1),
+                    ),
+                    const Text(
+                      "Active",
+                      style: TextStyle(
+                        color: Colors.green,
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(
+                    CupertinoIcons.forward,
+                    size: 18,
+                  ),
+                  onPressed: () {},
                 ),
               ],
             ),
-            subtitle: const Text(
-              "Active",
-              style: TextStyle(
-                color: Colors.green,
-              ),
-            ),
-            trailing: IconButton(
-              icon: const Icon(CupertinoIcons.forward),
-              onPressed: () {},
-            ),
-          ),
-        ));
+          )),
+    );
   }
 }

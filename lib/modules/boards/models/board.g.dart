@@ -42,8 +42,8 @@ BoardModel _$BoardModelFromJson(Map<String, dynamic> json) => $checkedCreate(
           name: $checkedConvert('name', (v) => v as String),
           map: $checkedConvert(
               'map',
-              (v) => (v as List<dynamic>)
-                  .map((e) => $enumDecode(_$InterfaceTypeEnumMap, e))
+              (v) => (v as List<dynamic>?)
+                  ?.map((e) => $enumDecode(_$InterfaceTypeEnumMap, e))
                   .toList()),
         );
         return val;
@@ -56,7 +56,7 @@ Map<String, dynamic> _$BoardModelToJson(BoardModel instance) =>
       '_id': instance.id,
       'description': instance.description,
       'name': instance.name,
-      'map': instance.map.map((e) => _$InterfaceTypeEnumMap[e]!).toList(),
+      'map': instance.map?.map((e) => _$InterfaceTypeEnumMap[e]!).toList(),
     };
 
 const _$InterfaceTypeEnumMap = {

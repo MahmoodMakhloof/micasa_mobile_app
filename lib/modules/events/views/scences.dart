@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/generated/assets.gen.dart';
 import 'package:shca/modules/home/views/home.dart';
+import 'package:shca/modules/events/views/create_scence.dart';
 import 'package:shca/widgets/custom_button.dart';
 import 'package:utilities/utilities.dart';
 
@@ -37,8 +39,9 @@ class ScencesView extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: CustomButton(
                       backgroundColor: Colors.indigoAccent,
-                      child: Text("Create New Scene"),
-                      onPressed: () {},
+                      child: const Text("Create New Scene"),
+                      onPressed: () =>
+                          context.navigateTo(const CreateScenceScreen()),
                     ),
                   ),
                 ),

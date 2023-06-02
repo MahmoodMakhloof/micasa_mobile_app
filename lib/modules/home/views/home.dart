@@ -9,7 +9,7 @@ import 'package:shca/modules/home/models/interface.dart';
 import 'package:shca/modules/home/views/all_devices.dart';
 import 'package:shca/modules/home/views/all_rooms.dart';
 import 'package:shca/modules/home/views/single_room.dart';
-import 'package:shca/modules/scences/blocs/fetchScences/fetch_scences_cubit.dart';
+import 'package:shca/modules/events/blocs/fetchScences/fetch_scences_cubit.dart';
 import 'package:shca/widgets/widgets.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:utilities/utilities.dart';
@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
               FetchGroupsCubit(context.read())..fetchMyGroups()),
       BlocProvider(
           create: (context) =>
-              FetchInterfacesCubit(context.read())..fetchInterfaces()),
+              FetchInterfacesCubit(context.read())..fetchInterfaces(scope: InterfacesScope.allBoards)),
       BlocProvider(
           create: (context) =>
               FetchScencesCubit(context.read())..fetchMyScences()),
@@ -128,8 +128,7 @@ class _HomeView extends StatelessWidget {
                           ),
                           TextButton(
                               onPressed: () =>
-                                  context.navigateTo(AllDevicesScreen(
-                                    interfaces: state.interfaces,
+                                  context.navigateTo(const AllDevicesScreen(
                                   )),
                               child: const Text("See All Devices"))
                         ],
