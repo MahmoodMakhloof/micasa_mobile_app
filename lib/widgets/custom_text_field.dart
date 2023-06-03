@@ -69,6 +69,7 @@ class CTextField extends StatefulWidget {
   final Color? fillColor;
   final bool? filled;
   final bool? autoFocus;
+  final Color? textColor;
 
   ///Creates a [FormField] that contains a custom feel.
   ///
@@ -95,7 +96,9 @@ class CTextField extends StatefulWidget {
     this.maxLines,
     this.fillColor,
     this.filled,
-    this.autoFocus, this.fontSize,
+    this.autoFocus,
+    this.fontSize,
+    this.textColor,
   }) : super(key: key);
 
   @override
@@ -157,8 +160,8 @@ class _CTextFieldState extends State<CTextField> {
       textDirection: widget.textDirection,
       cursorColor: CColors.primary,
       textCapitalization: widget.textCapitalization,
-      style: context.theme.textTheme.bodyLarge!
-          .copyWith(color: CColors.black70, fontSize: widget.fontSize),
+      style: context.theme.textTheme.bodyLarge!.copyWith(
+          color: widget.textColor ?? Colors.black45, fontSize: widget.fontSize),
       inputFormatters: [
         if (widget.inputFormatters != null) ...widget.inputFormatters!,
         if (widget.automaticallyImplyDigitsOnlyFilter && _isNumberBased)
@@ -173,11 +176,11 @@ class _CTextFieldState extends State<CTextField> {
   InputDecoration _buildDecoration() {
     return InputDecoration(
       hintText: widget.hint,
-      // hintStyle: const TextStyle(color: Colors.black26),
-      // errorStyle: widget.errorTextStyle ??
-      //     Style.appTextTheme(context).caption?.copyWith(
-      //           color: Colors.redAccent,
-      // ),
+      hintStyle: const TextStyle(color: Colors.black26),
+      errorStyle: widget.errorTextStyle ??
+          Style.appTextTheme(context).caption?.copyWith(
+                color: Colors.redAccent,
+              ),
       filled: widget.filled ?? false,
       fillColor: widget.fillColor ?? Colors.grey.shade100,
       border: _buildInputBorder(),

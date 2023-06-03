@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/generated/assets.gen.dart';
+import 'package:shca/modules/events/blocs/fetchScences/fetch_scences_cubit.dart';
 import 'package:shca/modules/home/views/home.dart';
 import 'package:shca/modules/events/views/create_scence.dart';
 import 'package:shca/widgets/custom_button.dart';
 import 'package:utilities/utilities.dart';
+
+import '../../../widgets/error_viewer.dart';
+import '../../../widgets/no_data.dart';
 
 class ScencesView extends StatelessWidget {
   const ScencesView({super.key});
@@ -48,14 +53,33 @@ class ScencesView extends StatelessWidget {
               ),
             ),
           ),
-          ListView.separated(
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 2,
-            padding: const EdgeInsets.all(10),
-            shrinkWrap: true,
-            itemBuilder: (context, index) => const ScenceItem(),
-            separatorBuilder: ((context, index) => const Space.v10()),
+          BlocBuilder<FetchScencesCubit, FetchScencesState>(
+            builder: (context, state) {
+              if (state is FetchScencesFailed) {
+                return ErrorViewer(state.e!);
+              }
+
+              if (state is FetchScencesSucceeded) {
+                final scences = state.scences;
+                if (scences.isEmpty) {
+                  return const NoDataView();
+                }
+                return ListView.separated(
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: scences.length,
+                  padding: const EdgeInsets.all(10),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) => ScenceItem(
+                    scence: scences[index],
+                  ),
+                  separatorBuilder: ((context, index) => const Space.v10()),
+                );
+              }
+
+              return const Center(child: CircularProgressIndicator());
+            },
           ),
+          Space.v30(),
         ],
       ),
     );

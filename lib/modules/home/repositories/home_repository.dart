@@ -30,13 +30,13 @@ class HomeRepository {
     }
   }
 
-  Future<Group> createNewGroup(String name) async {
+  Future<Group> createNewGroup({required String name,required List<String> interfaces}) async {
     try {
       final uri = HomeNetworking.createNewGroup;
       final customOptions = await getCustomOptions();
       final response = await _client.postUri(
         uri,
-        data: {"name": name},
+        data: {"name": name, "interfaces": interfaces},
         options: commonOptionsWithCustom(customOptions: customOptions),
       );
       final data = response.data['group'];

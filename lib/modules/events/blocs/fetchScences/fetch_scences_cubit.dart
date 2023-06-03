@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:shca/modules/events/repositories/events_repository.dart';
 import 'package:utilities/utilities.dart';
 
-import '../../../Scences/models/scence.dart';
+import '../../../events/models/scence.dart';
 
 
 part 'fetch_scences_state.dart';
@@ -16,7 +16,7 @@ class FetchScencesCubit extends Cubit<FetchScencesState> {
     emit(FetchScencesInProgress());
     try {
       var scences = await _scenceRepository.fetchScences();
-      emit(FetchScencesSucceeded(scences: scences as List<Scence>));
+      emit(FetchScencesSucceeded(scences: scences));
     } catch (e) {
       emit(FetchScencesFailed(e));
     }

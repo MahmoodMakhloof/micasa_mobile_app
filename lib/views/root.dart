@@ -17,14 +17,23 @@ import '../modules/auth/blocs/get_user_data_cubit/get_user_data_cubit.dart';
 import '../modules/events/views/scences.dart';
 import '../modules/events/views/schedules.dart';
 
-class Root extends StatefulWidget {
-  const Root({Key? key}) : super(key: key);
+class Root extends StatelessWidget {
+  const Root({super.key});
 
   @override
-  State<Root> createState() => RootState();
+  Widget build(BuildContext context) {
+    return const _RootView();
+  }
 }
 
-class RootState extends State<Root> {
+class _RootView extends StatefulWidget {
+  const _RootView({Key? key}) : super(key: key);
+
+  @override
+  State<_RootView> createState() => _RootViewState();
+}
+
+class _RootViewState extends State<_RootView> {
   late int currentIndex;
   List<Widget> views = const [
     HomeScreen(),

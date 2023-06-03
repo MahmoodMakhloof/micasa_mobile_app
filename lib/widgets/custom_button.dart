@@ -3,8 +3,6 @@ import 'package:utilities/utilities.dart';
 
 import '../core/helpers/style_config.dart';
 
-
-
 const double kCustomButtonHeight = 46;
 
 class _CustomButtonHeroTag {
@@ -124,7 +122,7 @@ class _CustomButtonState extends State<CustomButton> {
                   key: const Key("CustomButton_overlay"),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.6),
-                    borderRadius: widget.borderRadius ?? KBorders.bc10,
+                    borderRadius: widget.borderRadius ?? KBorders.bc5,
                   ),
                 ),
               ),
@@ -140,7 +138,7 @@ class _CustomButtonState extends State<CustomButton> {
   BoxDecoration _buildButtonDecoration() {
     return BoxDecoration(
       color: widget.backgroundColor ?? CColors.primary,
-      borderRadius: widget.borderRadius ?? KBorders.bc10,
+      borderRadius: widget.borderRadius ?? KBorders.bc5,
       gradient: widget.bgGradient,
     );
   }

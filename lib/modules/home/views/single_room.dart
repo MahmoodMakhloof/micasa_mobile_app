@@ -2,7 +2,6 @@ import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/modules/home/blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
 import 'package:shca/modules/home/models/group.dart';
@@ -31,7 +30,7 @@ class SingleRoomScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => FetchInterfacesCubit(context.read())
-        ..fetchInterfaces(scope: InterfacesScope.inGroup,groupId: group.id),
+        ..fetchInterfaces(scope: InterfacesScope.inGroup, groupId: group.id),
       child: _SingleRoomView(group: group, groups: groups),
     );
   }
@@ -52,7 +51,7 @@ class __SingleRoomViewState extends State<_SingleRoomView> {
   @override
   void initState() {
     _controller = TextEditingController(text: widget.group.name);
-    
+
     super.initState();
   }
 
@@ -65,20 +64,35 @@ class __SingleRoomViewState extends State<_SingleRoomView> {
           hintText: 'Select Room',
           items: widget.groups.map((e) => e.name).toList(),
           controller: _controller,
-          onChanged: (groupName)=>context.read<FetchInterfacesCubit>().fetchInterfaces(scope: InterfacesScope.inGroup,groupId:
-          widget.groups
-          .firstWhere((element) => element.name == groupName)
-          .id),
+          onChanged: (groupName) => context
+              .read<FetchInterfacesCubit>()
+              .fetchInterfaces(
+                  scope: InterfacesScope.inGroup,
+                  groupId: widget.groups
+                      .firstWhere((element) => element.name == groupName)
+                      .id),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
             child: SizedBox(
                 width: 100,
                 child: CustomButton(
-                    onPressed: () => context.navigateTo(AddDevicesScreen(
-                        group: widget.groups.firstWhere(
-                            (element) => element.name == _controller.text))),
+                    onPressed: () async {
+                      final reLoadPage = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddDevicesScreen(
+                                group: widget.groups.firstWhere((element) =>
+                                    element.name == _controller.text))),
+                      );
+
+                      if (reLoadPage) {
+                        context.read<FetchInterfacesCubit>().fetchInterfaces(
+                            scope: InterfacesScope.inGroup,
+                            groupId: widget.group.id);
+                      }
+                    },
                     child: const Text("Add Devices"))),
           ),
         ],
@@ -159,33 +173,33 @@ class __SingleRoomViewState extends State<_SingleRoomView> {
                 ),
               ),
               const Space.v10(),
-             BlocBuilder<FetchInterfacesCubit, FetchInterfacesState>(
-              builder: (context, state) {
-                if (state is FetchInterfacesFailed) {
-                  return ErrorViewer(state.e!);
-                } else if (state is FetchInterfacesSucceeded) {
-                  final interfaces = state.interfaces;
-                  if (interfaces.isEmpty) {
-                    return const NoDataView();
+              BlocBuilder<FetchInterfacesCubit, FetchInterfacesState>(
+                builder: (context, state) {
+                  if (state is FetchInterfacesFailed) {
+                    return ErrorViewer(state.e!);
+                  } else if (state is FetchInterfacesSucceeded) {
+                    final interfaces = state.interfaces;
+                    if (interfaces.isEmpty) {
+                      return const NoDataView();
+                    }
+                    return GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 5,
+                                mainAxisSpacing: 5),
+                        itemCount: interfaces.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: ((context, index) => DeviceItem(
+                            interface: interfaces[index],
+                            color:
+                                getRandomColor(seed: (index + 80967).toString())
+                                    .color)));
                   }
-                  return GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 5,
-                              mainAxisSpacing: 5),
-                      itemCount: interfaces.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: ((context, index) => DeviceItem(
-                          interface: interfaces[index],
-                          color: getRandomColor(
-                                  seed: (index + 80967).toString())
-                              .color)));
-                }
-                return const Center(child: CircularProgressIndicator());
-              },
-            ),
+                  return const Center(child: CircularProgressIndicator());
+                },
+              ),
             ],
           ),
         ),

@@ -27,11 +27,11 @@ class Scence extends Equatable {
 
 @JsonSerializable()
 class Event extends Equatable {
-  final String interfaceId;
-  final double value;
-  const Event({
-    required this.interfaceId,
-    required this.value,
+  String? interfaceId;
+  double? value;
+  Event({
+     this.interfaceId,
+     this.value,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
@@ -39,5 +39,5 @@ class Event extends Equatable {
   Map<String, dynamic> toJson() => _$EventToJson(this);
 
   @override
-  List<Object> get props => [interfaceId,value];
+  List<Object?> get props => [interfaceId, value];
 }

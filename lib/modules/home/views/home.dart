@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shca/core/helpers/navigation.dart';
+import 'package:shca/modules/events/models/scence.dart';
 import 'package:shca/modules/home/blocs/fetchGroupsCubit/fetch_groups_cubit.dart';
 import 'package:shca/modules/home/blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
 import 'package:shca/modules/home/models/interface.dart';
@@ -24,14 +25,8 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(providers: [
       BlocProvider(
-          create: (context) =>
-              FetchGroupsCubit(context.read())..fetchMyGroups()),
-      BlocProvider(
-          create: (context) =>
-              FetchInterfacesCubit(context.read())..fetchInterfaces(scope: InterfacesScope.allBoards)),
-      BlocProvider(
-          create: (context) =>
-              FetchScencesCubit(context.read())..fetchMyScences()),
+          create: (context) => FetchInterfacesCubit(context.read())
+            ..fetchInterfaces(scope: InterfacesScope.allBoards)),
     ], child: const _HomeView());
   }
 }
@@ -47,12 +42,30 @@ class _HomeView extends StatelessWidget {
         child: Column(
           children: [
             const Space.v10(),
-            ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 1,
-              shrinkWrap: true,
-              itemBuilder: (context, index) => const ScenceItem(),
-              separatorBuilder: ((context, index) => const Space.v10()),
+            BlocBuilder<FetchScencesCubit, FetchScencesState>(
+              builder: (context, state) {
+                if (state is FetchScencesFailed) {
+                  return ErrorViewer(state.e!);
+                }
+
+                if (state is FetchScencesSucceeded) {
+                  final scences = state.scences;
+                  if (scences.isEmpty) {
+                    return const NoDataView();
+                  }
+                  return ListView.separated(
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 1,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) => ScenceItem(
+                      scence: scences[index],
+                    ),
+                    separatorBuilder: ((context, index) => const Space.v10()),
+                  );
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              },
             ),
             BlocBuilder<FetchGroupsCubit, FetchGroupsState>(
               builder: (context, state) {
@@ -128,8 +141,7 @@ class _HomeView extends StatelessWidget {
                           ),
                           TextButton(
                               onPressed: () =>
-                                  context.navigateTo(const AllDevicesScreen(
-                                  )),
+                                  context.navigateTo(const AllDevicesScreen()),
                               child: const Text("See All Devices"))
                         ],
                       ),
@@ -162,7 +174,8 @@ class _HomeView extends StatelessWidget {
 }
 
 class ScenceItem extends StatelessWidget {
-  const ScenceItem({super.key});
+  final Scence scence;
+  const ScenceItem({super.key, required this.scence});
 
   @override
   Widget build(BuildContext context) {
@@ -182,20 +195,22 @@ class ScenceItem extends StatelessWidget {
                   size: 40,
                 ),
                 const Space.h15(),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Comming Home",
-                      style: Style.appTheme.textTheme.bodyLarge!.copyWith(
-                          color: Colors.white, height: 1.5, fontSize: 20),
-                    ),
-                    Text(
-                      "Turn on the light and air conditioner",
-                      style: Style.appTheme.textTheme.bodySmall!.copyWith(
-                          color: Colors.white, height: 1.5, fontSize: 13),
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        scence.name,
+                        style: Style.appTheme.textTheme.bodyLarge!.copyWith(
+                            color: Colors.white, height: 1.5, fontSize: 20),
+                      ),
+                      Text(
+                        scence.description,
+                        style: Style.appTheme.textTheme.bodySmall!.copyWith(
+                            color: Colors.white, height: 1.5, fontSize: 13),
+                      ),
+                    ],
+                  ),
                 )
               ],
             ),

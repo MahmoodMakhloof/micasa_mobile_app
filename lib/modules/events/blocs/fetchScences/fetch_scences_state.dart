@@ -13,7 +13,7 @@ class FetchScencesInProgress extends FetchScencesState {
 }
 
 class FetchScencesSucceeded extends FetchScencesState {
-  final List<Scence>? scences;
+  final List<Scence> scences;
   
 
   const FetchScencesSucceeded({

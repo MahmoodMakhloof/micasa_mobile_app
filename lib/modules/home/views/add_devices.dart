@@ -46,10 +46,15 @@ class _AddDevicesView extends StatefulWidget {
 }
 
 class _AddDevicesViewState extends State<_AddDevicesView> {
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   final TextEditingController _controller = TextEditingController();
 
   final List<Interface> _selectedInterfaces = [];
-
 
   @override
   Widget build(BuildContext context) {
@@ -61,23 +66,25 @@ class _AddDevicesViewState extends State<_AddDevicesView> {
           child: CTextField(
             controller: _controller,
             hint: "Search Devices",
+            filled: true,
             onChanged: (value) {
-              context
-                  .read<FetchInterfacesCubit>()
-                  .fetchInterfaces(scope: InterfacesScope.toGroup,groupId: widget.group.id, text: value);
+              context.read<FetchInterfacesCubit>().fetchInterfaces(
+                  scope: InterfacesScope.toGroup,
+                  groupId: widget.group.id,
+                  text: value);
             },
           ),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
             child: SizedBox(
-                width: 100,
+                width: 80,
                 child: BlocConsumer<AddInterfacesToGroupCubit,
                     AddInterfacesToGroupState>(
                   listener: (context, state) {
                     if (state is AddInterfacesToGroupSucceeded) {
-                      Navigator.pop(context);
+                      Navigator.pop(context, true);
                     }
                   },
                   builder: (context, state) {
@@ -91,7 +98,7 @@ class _AddDevicesViewState extends State<_AddDevicesView> {
                                   interfacesIds: _selectedInterfaces
                                       .map((e) => e.id)
                                       .toList()),
-                        child: const Text("Add"));
+                        child: const Text("Confirm"));
                   },
                 )),
           ),
@@ -107,10 +114,7 @@ class _AddDevicesViewState extends State<_AddDevicesView> {
                   if (state is FetchInterfacesFailed) {
                     return ErrorViewer(state.e!);
                   } else if (state is FetchInterfacesSucceeded) {
-                    final interfaces = state.interfaces
-                        .where((element) =>
-                            !widget.group.interfaces.contains(element.id))
-                        .toList();
+                    final interfaces = state.interfaces;
 
                     if (interfaces.isEmpty) {
                       return const NoDataView();
@@ -145,8 +149,7 @@ class _AddDevicesViewState extends State<_AddDevicesView> {
                                   }
                                 },
                                 color: getRandomColor(
-                                        seed: (interfaces[index])
-                                            .toString())
+                                        seed: (interfaces[index]).toString())
                                     .color))),
                       ],
                     );

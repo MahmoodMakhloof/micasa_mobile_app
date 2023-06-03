@@ -37,8 +37,8 @@ Event _$EventFromJson(Map<String, dynamic> json) => $checkedCreate(
       json,
       ($checkedConvert) {
         final val = Event(
-          interfaceId: $checkedConvert('interface_id', (v) => v as String),
-          value: $checkedConvert('value', (v) => (v as num).toDouble()),
+          interfaceId: $checkedConvert('interface_id', (v) => v as String?),
+          value: $checkedConvert('value', (v) => (v as num?)?.toDouble()),
         );
         return val;
       },
