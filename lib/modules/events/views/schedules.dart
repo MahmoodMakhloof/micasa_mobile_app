@@ -2,9 +2,16 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
+import 'package:shca/modules/events/blocs/fetchSchedules/fetch_schedules_cubit.dart';
+import 'package:shca/modules/events/models/schedule.dart';
+import 'package:shca/modules/events/views/create_schedule.dart';
 import 'package:shca/widgets/custom_button.dart';
+import 'package:shca/widgets/error_viewer.dart';
+import 'package:shca/widgets/no_data.dart';
 import 'package:utilities/utilities.dart';
 
 import '../../../generated/assets.gen.dart';
@@ -42,20 +49,36 @@ class SchedulesView extends StatelessWidget {
                     child: CustomButton(
                       backgroundColor: Colors.indigoAccent,
                       child: const Text("Create New Schedule"),
-                      onPressed: () {},
+                      onPressed: () =>
+                          context.navigateTo(const CreateScheuleScreen()),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-          ListView.separated(
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 4,
-            padding: const EdgeInsets.all(10),
-            shrinkWrap: true,
-            itemBuilder: (context, index) => const ScheduleItem(),
-            separatorBuilder: ((context, index) => const Space.v10()),
+          BlocBuilder<FetchSchedulesCubit, FetchSchedulesState>(
+            builder: (context, state) {
+              if (state is FetchSchedulesFailed) {
+                return ErrorViewer(state.e!);
+              } else if (state is FetchSchedulesSucceeded) {
+                final schedules = state.schedules;
+                if (schedules.isEmpty) {
+                  return const NoDataView();
+                }
+                return ListView.separated(
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: schedules.length,
+                  padding: const EdgeInsets.all(10),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) => ScheduleItem(
+                    schedule: schedules[index],
+                  ),
+                  separatorBuilder: ((context, index) => const Space.v10()),
+                );
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
           ),
         ],
       ),
@@ -66,21 +89,23 @@ class SchedulesView extends StatelessWidget {
 class ScheduleItem extends StatelessWidget {
   const ScheduleItem({
     Key? key,
+    required this.schedule,
   }) : super(key: key);
 
+  final Schedule schedule;
   @override
   Widget build(BuildContext context) {
-    bool isOn = Random().nextBool();
     return Container(
         decoration: BoxDecoration(
-            // gradient: isOn ? CColors.blueLinearGradient : null,
-            color: isOn ? CColors.primary.withOpacity(0.1) : Colors.white,
+            color: schedule.enabled
+                ? CColors.primary.withOpacity(0.1)
+                : Colors.white,
             borderRadius: BorderRadius.circular(10)),
         child: ListTile(
-          leading: Icon(FontAwesomeIcons.clock),
-          title: Text("Turn off all fans after midnight"),
-          subtitle: Text("Everyday at 08:00 PM"),
-          trailing: Switch(value: isOn, onChanged: (value) {}),
+          leading: const Icon(FontAwesomeIcons.clock),
+          title: Text(schedule.name),
+          subtitle: Text(schedule.time),
+          trailing: Switch(value: schedule.enabled, onChanged: (value) {}),
         ));
   }
 }

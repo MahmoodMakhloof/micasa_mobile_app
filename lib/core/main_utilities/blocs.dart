@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shca/modules/events/blocs/fetchScences/fetch_scences_cubit.dart';
+import 'package:shca/modules/events/blocs/fetchSchedules/fetch_schedules_cubit.dart';
 import 'package:shca/modules/events/repositories/events_repository.dart';
 import 'package:shca/modules/home/blocs/fetchGroupsCubit/fetch_groups_cubit.dart';
 import 'package:shca/modules/home/repositories/home_repository.dart';
@@ -29,6 +30,11 @@ class BlocProviders extends StatelessWidget {
           create: (context) => FetchScencesCubit(
             context.read<EventsRepository>(),
           )..fetchMyScences(),
+        ),
+         BlocProvider(
+          create: (context) => FetchSchedulesCubit(
+            context.read<EventsRepository>(),
+          )..fetchMySchedules(),
         ),
         BlocProvider(
           create: (context) => FetchGroupsCubit(

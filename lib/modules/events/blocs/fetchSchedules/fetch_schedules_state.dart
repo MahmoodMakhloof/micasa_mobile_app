@@ -13,7 +13,7 @@ class FetchSchedulesInProgress extends FetchSchedulesState {
 }
 
 class FetchSchedulesSucceeded extends FetchSchedulesState {
-  final List<Schedule>? schedules;
+  final List<Schedule> schedules;
   
 
   const FetchSchedulesSucceeded({

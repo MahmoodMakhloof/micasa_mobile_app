@@ -57,9 +57,10 @@ class EventsRepository {
 
   Future<Schedule> createNewSchedule(
       {required String name,
-      required List<String> days,
+      required String description,
+      required bool isRepeated,
+      required List<bool> days,
       required String time,
-      required String? description,
       required List<Event> events}) async {
     try {
       final uri = EventsNetworking.createSchedule;
@@ -68,6 +69,7 @@ class EventsRepository {
         uri,
         data: {
           "name": name,
+          "repeated":isRepeated,
           "description": description,
           "days":days,
           "time":time,

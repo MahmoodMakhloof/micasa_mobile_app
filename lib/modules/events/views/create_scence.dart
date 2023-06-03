@@ -56,6 +56,7 @@ class _CreateScenceViewState extends State<_CreateScenceView> {
   final GlobalKey _formKey = GlobalKey<FormState>();
 
   bool _isEventsValid() {
+    if (events.isEmpty) return false;
     for (var element in events) {
       if (element.interfaceId == null) {
         return false;
@@ -210,9 +211,9 @@ class _CreateScenceViewState extends State<_CreateScenceView> {
                     });
                   },
                   child: CircleAvatar(
-                    backgroundColor: Colors.grey.shade300,
+                    backgroundColor: Colors.grey.shade200,
                     radius: 15,
-                    child: const Icon(
+                    child: Icon(
                       CupertinoIcons.add,
                       color: Colors.black54,
                     ),
@@ -262,12 +263,11 @@ class _EventWidgetState extends State<EventWidget> {
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: CColors.primary,
+                  backgroundColor: Colors.grey.shade200,
                   radius: 15,
-                  child: Text(
-                    (widget.index + 1).toString(),
-                    style: Style.appTheme.textTheme.titleMedium!
-                        .copyWith(color: Colors.white),
+                  child: Icon(
+                    CupertinoIcons.right_chevron,
+                    color: Colors.black54,
                   ),
                 ),
                 const Space.h20(),
