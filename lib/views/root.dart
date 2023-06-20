@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
+import 'package:shca/core/rtc/socket_io._helper.dart';
 import 'package:shca/generated/assets.gen.dart';
 import 'package:shca/generated/locale_keys.g.dart';
 import 'package:shca/modules/boards/views/boards.dart';
@@ -45,6 +46,9 @@ class _RootViewState extends State<_RootView> {
 
   @override
   void initState() {
+    //* start socket
+    SocketIOHelper.init();
+
     currentIndex = 0;
     super.initState();
   }

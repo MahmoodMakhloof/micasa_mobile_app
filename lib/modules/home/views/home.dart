@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/modules/events/models/scence.dart';
@@ -11,6 +12,7 @@ import 'package:shca/modules/home/views/all_devices.dart';
 import 'package:shca/modules/home/views/all_rooms.dart';
 import 'package:shca/modules/home/views/single_room.dart';
 import 'package:shca/modules/events/blocs/fetchScences/fetch_scences_cubit.dart';
+import 'package:shca/modules/home/widgets/device_item.dart';
 import 'package:shca/widgets/widgets.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:utilities/utilities.dart';
@@ -145,20 +147,17 @@ class _HomeView extends StatelessWidget {
                               child: const Text("See All Devices"))
                         ],
                       ),
-                      GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 5,
-                                  mainAxisSpacing: 5),
-                          itemCount: 2,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: ((context, index) => DeviceItem(
-                              interface: interfaces[index],
-                              color: getRandomColor(
-                                      seed: (index + 80967).toString())
-                                  .color))),
+                      StaggeredGrid.count(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          children: List.generate(
+                              4,
+                              (index) => DeviceItem(
+                                  interface: interfaces[index],
+                                  color: getRandomColor(
+                                          seed: (index + 80967).toString())
+                                      .color))),
                     ],
                   );
                 }
@@ -169,6 +168,12 @@ class _HomeView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Tile({required int index}) {
+    return Container(
+      color: getRandomColor(seed: (index + 80967).toString()).color,
     );
   }
 }
@@ -286,83 +291,6 @@ class RoomItem extends StatelessWidget {
                 .copyWith(height: 1.5, color: Colors.white70),
           )
         ]),
-      ),
-    );
-  }
-}
-
-class DeviceItem extends StatelessWidget {
-  final Interface interface;
-  final Color color;
-  const DeviceItem({
-    Key? key,
-    required this.color,
-    required this.interface,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration:
-          BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
-      child: Center(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                CircleAvatar(
-                  backgroundColor: CColors.background,
-                  radius: 30,
-                  child: Icon(
-                    FontAwesomeIcons.lightbulb,
-                    color: color,
-                  ),
-                ),
-                Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Switch(value: true, onChanged: (value) {}),
-                      Text(
-                        interface.name,
-                        style: Style.appTheme.textTheme.bodyLarge!
-                            .copyWith(height: 1.5, color: Colors.white),
-                      ),
-                      Text(
-                        interface.board!.name,
-                        style: Style.appTheme.textTheme.bodyMedium!
-                            .copyWith(height: 1.5, color: Colors.white70),
-                      )
-                    ]),
-              ],
-            ),
-            const Space.v20(),
-            SliderTheme(
-              data: SliderThemeData(
-                  trackHeight: 40,
-                  activeTrackColor: Colors.orangeAccent,
-                  thumbShape: SliderComponentShape.noOverlay,
-                  overlayShape: SliderComponentShape.noOverlay,
-                  valueIndicatorShape: SliderComponentShape.noOverlay),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Stack(
-                  children: [
-                    Slider(label: "50", value: .50, onChanged: (value) {}),
-                    Center(
-                      child: Text(
-                        "50",
-                        style: Style.appTheme.textTheme.bodyLarge!
-                            .copyWith(color: Colors.white, fontSize: 20),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
       ),
     );
   }

@@ -62,6 +62,13 @@ class $AssetsImagesVectorsGen {
   /// File path: assets/images/vectors/add.svg
   SvgGenImage get add => const SvgGenImage('assets/images/vectors/add.svg');
 
+  /// File path: assets/images/vectors/air-conditioner.svg
+  SvgGenImage get airConditioner =>
+      const SvgGenImage('assets/images/vectors/air-conditioner.svg');
+
+  /// File path: assets/images/vectors/alarm.svg
+  SvgGenImage get alarm => const SvgGenImage('assets/images/vectors/alarm.svg');
+
   /// File path: assets/images/vectors/apps.svg
   SvgGenImage get apps => const SvgGenImage('assets/images/vectors/apps.svg');
 
@@ -101,6 +108,10 @@ class $AssetsImagesVectorsGen {
   SvgGenImage get cloudy =>
       const SvgGenImage('assets/images/vectors/cloudy.svg');
 
+  /// File path: assets/images/vectors/desk-lamp.svg
+  SvgGenImage get deskLamp =>
+      const SvgGenImage('assets/images/vectors/desk-lamp.svg');
+
   /// File path: assets/images/vectors/dollar.svg
   SvgGenImage get dollar =>
       const SvgGenImage('assets/images/vectors/dollar.svg');
@@ -108,6 +119,13 @@ class $AssetsImagesVectorsGen {
   /// File path: assets/images/vectors/envelope.svg
   SvgGenImage get envelope =>
       const SvgGenImage('assets/images/vectors/envelope.svg');
+
+  /// File path: assets/images/vectors/fan.svg
+  SvgGenImage get fan => const SvgGenImage('assets/images/vectors/fan.svg');
+
+  /// File path: assets/images/vectors/fire-alarm.svg
+  SvgGenImage get fireAlarm =>
+      const SvgGenImage('assets/images/vectors/fire-alarm.svg');
 
   /// File path: assets/images/vectors/globe.svg
   SvgGenImage get globe => const SvgGenImage('assets/images/vectors/globe.svg');
@@ -121,6 +139,13 @@ class $AssetsImagesVectorsGen {
   /// File path: assets/images/vectors/info.svg
   SvgGenImage get info => const SvgGenImage('assets/images/vectors/info.svg');
 
+  /// File path: assets/images/vectors/lamp-off.svg
+  SvgGenImage get lampOff =>
+      const SvgGenImage('assets/images/vectors/lamp-off.svg');
+
+  /// File path: assets/images/vectors/lamp.svg
+  SvgGenImage get lamp => const SvgGenImage('assets/images/vectors/lamp.svg');
+
   /// File path: assets/images/vectors/lock.svg
   SvgGenImage get lock => const SvgGenImage('assets/images/vectors/lock.svg');
 
@@ -131,6 +156,10 @@ class $AssetsImagesVectorsGen {
   /// File path: assets/images/vectors/megaphone.svg
   SvgGenImage get megaphone =>
       const SvgGenImage('assets/images/vectors/megaphone.svg');
+
+  /// File path: assets/images/vectors/padlock.svg
+  SvgGenImage get padlock =>
+      const SvgGenImage('assets/images/vectors/padlock.svg');
 
   /// File path: assets/images/vectors/play.svg
   SvgGenImage get play => const SvgGenImage('assets/images/vectors/play.svg');
@@ -169,6 +198,10 @@ class $AssetsImagesVectorsGen {
   SvgGenImage get smartHomeFilled =>
       const SvgGenImage('assets/images/vectors/smart_home_filled.svg');
 
+  /// File path: assets/images/vectors/temperature-sensor.svg
+  SvgGenImage get temperatureSensor =>
+      const SvgGenImage('assets/images/vectors/temperature-sensor.svg');
+
   /// File path: assets/images/vectors/user-add.svg
   SvgGenImage get userAdd =>
       const SvgGenImage('assets/images/vectors/user-add.svg');
@@ -190,6 +223,8 @@ class $AssetsImagesVectorsGen {
   /// List of all assets
   List<SvgGenImage> get values => [
         add,
+        airConditioner,
+        alarm,
         apps,
         barsStaggered,
         bell,
@@ -201,15 +236,21 @@ class $AssetsImagesVectorsGen {
         clapperboard,
         clock,
         cloudy,
+        deskLamp,
         dollar,
         envelope,
+        fan,
+        fireAlarm,
         globe,
         heart,
         home,
         info,
+        lampOff,
+        lamp,
         lock,
         marker,
         megaphone,
+        padlock,
         play,
         relax,
         scan,
@@ -220,6 +261,7 @@ class $AssetsImagesVectorsGen {
         shoppingCart,
         smartHome,
         smartHomeFilled,
+        temperatureSensor,
         userAdd,
         user,
         usersAlt,

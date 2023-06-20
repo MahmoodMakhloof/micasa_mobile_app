@@ -28,7 +28,19 @@ class Board extends Equatable {
   List<Object?> get props => [id, name, model, isActive];
 }
 
-enum InterfaceType {DO,DI,AO,AI}
+enum InterfaceType { DO, DI, AO, AI }
+
+enum InterfaceDevices {
+  lamp,
+  fan,
+  ac,
+  curtain,
+  lampshade,
+  door,
+  temperature,
+  smoke,
+  lock
+}
 
 @JsonSerializable()
 class BoardModel extends Equatable {

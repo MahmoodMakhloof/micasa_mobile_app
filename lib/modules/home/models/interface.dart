@@ -12,14 +12,16 @@ class Interface extends Equatable {
 
   final String name;
   final Board? board;
-  final String type;
-  final int? value;
+  final InterfaceType type;
+  final InterfaceDevices? device;
+  final double? value;
 
-  const Interface({
+   const Interface({
     required this.id,
     required this.name,
-    required this.type,
     required this.board,
+    required this.type,
+     this.device,
     required this.value,
   });
 
@@ -29,5 +31,23 @@ class Interface extends Equatable {
   Map<String, dynamic> toJson() => _$InterfaceToJson(this);
 
   @override
-  List<Object?> get props => [id, name, board, value, type];
+  List<Object?> get props => [id, name, board,device, value, type];
+
+  Interface copyWith({
+    String? id,
+    String? name,
+    Board? board,
+    InterfaceType? type,
+    InterfaceDevices? device,
+    double? value,
+  }) {
+    return Interface(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      board: board ?? this.board,
+      type: type ?? this.type,
+      device: device ?? this.device,
+      value: value ?? this.value,
+    );
+  }
 }

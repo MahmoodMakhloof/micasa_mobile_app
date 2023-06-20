@@ -2,11 +2,13 @@ import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/modules/home/blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
 import 'package:shca/modules/home/models/group.dart';
 import 'package:shca/modules/home/views/add_devices.dart';
 import 'package:shca/modules/home/views/home.dart';
+import 'package:shca/modules/home/widgets/device_item.dart';
 import 'package:shca/widgets/back_button.dart';
 import 'package:shca/widgets/custom_button.dart';
 import 'package:utilities/utilities.dart';
@@ -182,24 +184,22 @@ class __SingleRoomViewState extends State<_SingleRoomView> {
                     if (interfaces.isEmpty) {
                       return const NoDataView();
                     }
-                    return GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 5,
-                                mainAxisSpacing: 5),
-                        itemCount: interfaces.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: ((context, index) => DeviceItem(
-                            interface: interfaces[index],
-                            color:
-                                getRandomColor(seed: (index + 80967).toString())
+                    return StaggeredGrid.count(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        children: List.generate(
+                            interfaces.length,
+                            (index) => DeviceItem(
+                                interface: interfaces[index],
+                                color: getRandomColor(
+                                        seed: (index + 80967).toString())
                                     .color)));
                   }
                   return const Center(child: CircularProgressIndicator());
                 },
               ),
+              Space.v30()
             ],
           ),
         ),

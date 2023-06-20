@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shca/modules/boards/models/board.dart';
 import 'package:shca/modules/home/views/home.dart';
 import 'package:shca/widgets/back_button.dart';
@@ -8,6 +9,7 @@ import 'package:utilities/utilities.dart';
 
 import '../../../widgets/error_viewer.dart';
 import '../../home/blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
+import '../../home/widgets/device_item.dart';
 
 class BoardDetailsScreen extends StatelessWidget {
   final Board board;
@@ -44,16 +46,22 @@ class _BoardDetailsView extends StatelessWidget {
             if (interfaces.isEmpty) {
               return const NoDataView();
             }
-            return GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, crossAxisSpacing: 5, mainAxisSpacing: 5),
-                itemCount: interfaces.length,
-                padding: const EdgeInsets.all(10),
-                shrinkWrap: true,
-                itemBuilder: ((context, index) => DeviceItem(
-                    interface: interfaces[index],
-                    color: getRandomColor(seed: (interfaces[index]).toString())
-                        .color)));
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: StaggeredGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    children: List.generate(
+                        interfaces.length,
+                        (index) => DeviceItem(
+                            interface: interfaces[index],
+                            color:
+                                getRandomColor(seed: (index + 80967).toString())
+                                    .color))),
+              ),
+            );
           }
           return const Center(child: CircularProgressIndicator());
         },
