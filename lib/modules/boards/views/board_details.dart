@@ -11,17 +11,25 @@ import '../../../widgets/error_viewer.dart';
 import '../../home/blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
 import '../../home/widgets/device_item.dart';
 
-class BoardDetailsScreen extends StatelessWidget {
+class BoardDetailsScreen extends StatefulWidget {
   final Board board;
   const BoardDetailsScreen({super.key, required this.board});
 
   @override
+  State<BoardDetailsScreen> createState() => _BoardDetailsScreenState();
+}
+
+class _BoardDetailsScreenState extends State<BoardDetailsScreen> {
+  @override
+  void initState() {
+    context.read<FetchInterfacesCubit>().fetchInterfaces(
+        scope: InterfacesScope.singleBoard, boardId: widget.board.id);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) => FetchInterfacesCubit(context.read())
-          ..fetchInterfaces(
-              scope: InterfacesScope.singleBoards, boardId: board.id),
-        child: _BoardDetailsView(board));
+    return _BoardDetailsView(widget.board);
   }
 }
 
@@ -42,7 +50,7 @@ class _BoardDetailsView extends StatelessWidget {
           if (state is FetchInterfacesFailed) {
             return ErrorViewer(state.e!);
           } else if (state is FetchInterfacesSucceeded) {
-            final interfaces = state.interfaces;
+            final interfaces = state.singleBoardInterfaces;
             if (interfaces.isEmpty) {
               return const NoDataView();
             }
@@ -56,6 +64,10 @@ class _BoardDetailsView extends StatelessWidget {
                     children: List.generate(
                         interfaces.length,
                         (index) => DeviceItem(
+                          scope: InterfacesScope.singleBoard,
+                            onTap: (data) => context
+                                .read<FetchInterfacesCubit>()
+                                .updateInterfaceValue(data),
                             interface: interfaces[index],
                             color:
                                 getRandomColor(seed: (index + 80967).toString())

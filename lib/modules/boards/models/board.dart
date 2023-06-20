@@ -42,6 +42,8 @@ enum InterfaceDevices {
   lock
 }
 
+
+
 @JsonSerializable()
 class BoardModel extends Equatable {
   @JsonKey(name: "_id")

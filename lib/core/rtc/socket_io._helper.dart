@@ -16,13 +16,12 @@ class SocketIOHelper {
       log('Connection Established');
     });
     socket.onDisconnect((_) => log('Connection Disconnection'));
-    socket.onConnectError((err) => log(
-      
-      err));
+    socket.onConnectError((err) => log(err));
     socket.onError((err) => log(err));
   }
 
-  static void sendMessage(String event, Map<String, dynamic> data) {
+  static Future<void> sendMessage(
+      String event, Map<String, dynamic> data) async {
     if (event.isEmpty) return;
 
     socket.emit(event, data);

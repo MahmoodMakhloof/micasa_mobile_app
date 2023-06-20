@@ -7,7 +7,6 @@ import 'package:shca/widgets/back_button.dart';
 import 'package:shca/widgets/custom_button.dart';
 import 'package:utilities/utilities.dart';
 
-import '../../../core/helpers/style_config.dart';
 import '../../../widgets/custom_text_field.dart';
 import '../../../widgets/error_viewer.dart';
 import '../../../widgets/no_data.dart';
@@ -113,7 +112,7 @@ class _AddRoomViewState extends State<_AddRoomView> {
                     if (state is FetchInterfacesFailed) {
                       return ErrorViewer(state.e!);
                     } else if (state is FetchInterfacesSucceeded) {
-                      final interfaces = state.interfaces;
+                      final interfaces = state.toGroupInterfaces;
 
                       if (interfaces.isEmpty) {
                         return const NoDataView();

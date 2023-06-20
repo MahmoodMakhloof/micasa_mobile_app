@@ -7,12 +7,10 @@ import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/modules/home/blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
 import 'package:shca/modules/home/models/group.dart';
 import 'package:shca/modules/home/views/add_devices.dart';
-import 'package:shca/modules/home/views/home.dart';
 import 'package:shca/modules/home/widgets/device_item.dart';
 import 'package:shca/widgets/back_button.dart';
 import 'package:shca/widgets/custom_button.dart';
 import 'package:utilities/utilities.dart';
-
 import '../../../widgets/error_viewer.dart';
 import '../../../widgets/no_data.dart';
 
@@ -22,19 +20,27 @@ List<String> avatars = [
   "https://i.pinimg.com/564x/ec/4a/cb/ec4acb4ab0fb3ed15b0c211ab16de9ca.jpg",
 ];
 
-class SingleRoomScreen extends StatelessWidget {
+class SingleRoomScreen extends StatefulWidget {
   final Group group;
   final List<Group> groups;
   const SingleRoomScreen(
       {super.key, required this.group, required this.groups});
 
   @override
+  State<SingleRoomScreen> createState() => _SingleRoomScreenState();
+}
+
+class _SingleRoomScreenState extends State<SingleRoomScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<FetchInterfacesCubit>().fetchInterfaces(
+        scope: InterfacesScope.inGroup, groupId: widget.group.id);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => FetchInterfacesCubit(context.read())
-        ..fetchInterfaces(scope: InterfacesScope.inGroup, groupId: group.id),
-      child: _SingleRoomView(group: group, groups: groups),
-    );
+    return _SingleRoomView(group: widget.group, groups: widget.groups);
   }
 }
 
@@ -55,6 +61,12 @@ class __SingleRoomViewState extends State<_SingleRoomView> {
     _controller = TextEditingController(text: widget.group.name);
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -180,7 +192,7 @@ class __SingleRoomViewState extends State<_SingleRoomView> {
                   if (state is FetchInterfacesFailed) {
                     return ErrorViewer(state.e!);
                   } else if (state is FetchInterfacesSucceeded) {
-                    final interfaces = state.interfaces;
+                    final interfaces = state.inGroupInterfaces;
                     if (interfaces.isEmpty) {
                       return const NoDataView();
                     }
@@ -191,6 +203,10 @@ class __SingleRoomViewState extends State<_SingleRoomView> {
                         children: List.generate(
                             interfaces.length,
                             (index) => DeviceItem(
+                              scope: InterfacesScope.inGroup,
+                                onTap: (data) => context
+                                    .read<FetchInterfacesCubit>()
+                                    .updateInterfaceValue(data),
                                 interface: interfaces[index],
                                 color: getRandomColor(
                                         seed: (index + 80967).toString())
@@ -199,7 +215,7 @@ class __SingleRoomViewState extends State<_SingleRoomView> {
                   return const Center(child: CircularProgressIndicator());
                 },
               ),
-              Space.v30()
+              const Space.v30()
             ],
           ),
         ),

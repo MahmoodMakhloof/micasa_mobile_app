@@ -7,7 +7,6 @@ import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/modules/events/models/scence.dart';
 import 'package:shca/modules/home/blocs/fetchGroupsCubit/fetch_groups_cubit.dart';
 import 'package:shca/modules/home/blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
-import 'package:shca/modules/home/models/interface.dart';
 import 'package:shca/modules/home/views/all_devices.dart';
 import 'package:shca/modules/home/views/all_rooms.dart';
 import 'package:shca/modules/home/views/single_room.dart';
@@ -25,11 +24,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(providers: [
-      BlocProvider(
-          create: (context) => FetchInterfacesCubit(context.read())
-            ..fetchInterfaces(scope: InterfacesScope.allBoards)),
-    ], child: const _HomeView());
+    return const _HomeView();
   }
 }
 
@@ -128,7 +123,7 @@ class _HomeView extends StatelessWidget {
                 if (state is FetchInterfacesFailed) {
                   return ErrorViewer(state.e!);
                 } else if (state is FetchInterfacesSucceeded) {
-                  final interfaces = state.interfaces;
+                  final interfaces = state.allBoardsInterfaces;
                   if (interfaces.isEmpty) {
                     return const NoDataView();
                   }
@@ -154,6 +149,8 @@ class _HomeView extends StatelessWidget {
                           children: List.generate(
                               4,
                               (index) => DeviceItem(
+                                scope: InterfacesScope.allBoards,
+                                 onTap: (data)=>context.read<FetchInterfacesCubit>().updateInterfaceValue(data),
                                   interface: interfaces[index],
                                   color: getRandomColor(
                                           seed: (index + 80967).toString())

@@ -1,167 +1,190 @@
-import 'dart:developer';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:utilities/utilities.dart';
+
 import 'package:shca/generated/assets.gen.dart';
 import 'package:shca/modules/boards/models/board.dart';
-
 import 'package:shca/modules/home/models/interface.dart';
 import 'package:shca/widgets/back_button.dart';
-import 'package:utilities/utilities.dart';
 
 import '../../../core/helpers/style_config.dart';
 import '../../../core/rtc/events.dart';
-import '../../../core/rtc/socket_io._helper.dart';
+import '../blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
 
-class SingleDevice extends StatefulWidget {
+class SingleDeviceScreen extends StatelessWidget {
   final Color color;
-  Interface interface;
-  SingleDevice({
+  final Interface interface;
+  final InterfacesScope scope;
+  final void Function(InterfaceValueChangeData) onTap;
+  const SingleDeviceScreen({
     Key? key,
     required this.color,
     required this.interface,
+    required this.onTap,
+    required this.scope,
   }) : super(key: key);
 
   @override
-  State<SingleDevice> createState() => _SingleDeviceState();
+  Widget build(BuildContext context) {
+    return _SingleDeviceView(
+      color: color,
+      interface: interface,
+      onTap: onTap,
+      scope: scope,
+    );
+  }
 }
 
-class _SingleDeviceState extends State<SingleDevice> {
-  @override
-  void initState() {
-    SocketIOHelper.socket.on("interfaceValueChanged", (data) {
-      updateValue(InterfaceValueChangeData.fromMap(data));
-    });
+class _SingleDeviceView extends StatelessWidget {
+  final Color color;
+  final Interface interface;
+  final InterfacesScope scope;
 
-    super.initState();
-  }
+  final void Function(InterfaceValueChangeData) onTap;
 
-  void updateValue(InterfaceValueChangeData data) {
-    if (data.interfaceId == widget.interface.id) {
-      setState(() {
-      widget.interface = widget.interface.copyWith(value: data.value);
-      log("value: ${widget.interface.value}");
-      });
-    }
-  }
+  const _SingleDeviceView({
+    Key? key,
+    required this.color,
+    required this.interface,
+    required this.scope,
+    required this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            Row(
-              children: const [
-                Padding(
-                  padding: EdgeInsets.all(15.0),
-                  child: MyBackButton(
-                    color: Colors.black87,
-                  ),
-                )
-              ],
-            ),
-            InkWell(
-              splashColor: Colors.grey.shade200,
-              highlightColor: Colors.transparent,
-              onTap: () {
-                setState(() {
-                  if (widget.interface.value == 0) {
-                    widget.interface = widget.interface.copyWith(value: 1);
-                  } else {
-                    widget.interface = widget.interface.copyWith(value: 0);
-                  }
-                });
+        child: BlocBuilder<FetchInterfacesCubit, FetchInterfacesState>(
+          builder: (context, state) {
+            if (state is FetchInterfacesSucceeded) {
+               Interface myInterface;
+              switch (scope) {
+                case InterfacesScope.allBoards:
+                  myInterface = state.allBoardsInterfaces
+                      .singleWhere((i) => i.id == interface.id);
+                  break;
+                case InterfacesScope.singleBoard:
+                  myInterface = state.singleBoardInterfaces
+                      .singleWhere((i) => i.id == interface.id);
 
-                //* socket emitting new value
-                var data = InterfaceValueChangeData(
-                        interfaceId: widget.interface.id,
-                        value: widget.interface.value ?? 0)
-                    .toMap();
-                SocketIOHelper.sendMessage(
-                    Events.interfaceValueChanged.name, data);
-              },
-              child: (widget.interface.value ?? 0) == 0
-                  ? Assets.images.vectors.lampOff.svg()
-                  : Assets.images.vectors.lamp.svg(),
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  break;
+                case InterfacesScope.inGroup:
+                  myInterface = state.inGroupInterfaces
+                      .singleWhere((i) => i.id == interface.id);
+
+                  break;
+                case InterfacesScope.toGroup:
+                  myInterface = state.toGroupInterfaces
+                      .singleWhere((i) => i.id == interface.id);
+
+                  break;
+
+              }
+
+              return Column(
                 children: [
-                  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  Row(
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.all(15.0),
+                        child: MyBackButton(
+                          color: Colors.black87,
+                        ),
+                      )
+                    ],
+                  ),
+                  InkWell(
+                    splashColor: Colors.grey.shade200,
+                    highlightColor: Colors.transparent,
+                    onTap: () {
+                      if (myInterface.value == 0) {
+                        onTap(InterfaceValueChangeData(
+                            interfaceId: myInterface.id, value: 1));
+                      } else {
+                        onTap(InterfaceValueChangeData(
+                            interfaceId: myInterface.id, value: 0));
+                      }
+                    },
+                    child: (myInterface.value ?? 0) == 0
+                        ? Assets.images.vectors.lampOff.svg()
+                        : Assets.images.vectors.lamp.svg(),
+                  ),
+                  const Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text(
-                          widget.interface.name,
-                          style: Style.appTheme.textTheme.titleLarge!
-                              .copyWith(height: 1, fontSize: 50),
-                        ),
-                        Text(
-                          widget.interface.board!.name,
-                          style: Style.appTheme.textTheme.titleMedium!.copyWith(
-                            height: 1,
-                          ),
-                        )
-                      ]),
-                  if (widget.interface.type == InterfaceType.AO) ...[
-                    const Space.v20(),
-                    SliderTheme(
-                      data: SliderThemeData(
-                          trackHeight: 60,
-                          activeTrackColor: Colors.orange,
-                          thumbShape: SliderComponentShape.noOverlay,
-                          overlayShape: SliderComponentShape.noOverlay,
-                          valueIndicatorShape: SliderComponentShape.noOverlay),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(40),
-                              child: Slider(
-                                  value: widget.interface.value ?? 0,
-                                  divisions: 5,
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      widget.interface = widget.interface
-                                          .copyWith(value: newValue);
-                                    });
-                                    //* socket emitting new value
-                                    var data = InterfaceValueChangeData(
-                                            interfaceId: widget.interface.id,
-                                            value: widget.interface.value ?? 0)
-                                        .toMap();
-                                    SocketIOHelper.sendMessage(
-                                        Events.interfaceValueChanged.name,
-                                        data);
-                                  }),
-                            ),
-                            Center(
-                              child: Text(
-                                ((widget.interface.value ?? 0) * 100)
-                                    .toInt()
-                                    .toString(),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                myInterface.name,
                                 style: Style.appTheme.textTheme.titleLarge!
-                                    .copyWith(
-                                        color: Colors.white, fontSize: 20),
+                                    .copyWith(height: 1, fontSize: 50),
                               ),
-                            )
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
+                              Text(
+                                myInterface.board!.name,
+                                style: Style.appTheme.textTheme.titleMedium!
+                                    .copyWith(
+                                  height: 1,
+                                ),
+                              )
+                            ]),
+                        if (myInterface.type == InterfaceType.AO) ...[
+                          const Space.v20(),
+                          SliderTheme(
+                            data: SliderThemeData(
+                                trackHeight: 60,
+                                activeTrackColor: Colors.orange,
+                                thumbShape: SliderComponentShape.noOverlay,
+                                overlayShape: SliderComponentShape.noOverlay,
+                                valueIndicatorShape:
+                                    SliderComponentShape.noOverlay),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(40),
+                                    child: Slider(
+                                        value: myInterface.value ?? 0,
+                                        divisions: 5,
+                                        onChanged: (newValue) {
+                                          onTap(InterfaceValueChangeData(
+                                              interfaceId: myInterface.id,
+                                              value: newValue));
+                                        }),
+                                  ),
+                                  Center(
+                                    child: Text(
+                                      ((myInterface.value ?? 0) * 100)
+                                          .toInt()
+                                          .toString(),
+                                      style: Style
+                                          .appTheme.textTheme.titleLarge!
+                                          .copyWith(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ],
+                    ),
+                  ),
+                  const Spacer()
                 ],
-              ),
-            ),
-            const Spacer()
-          ],
+              );
+            }
+            return const Center(child: CircularProgressIndicator());
+          },
         ),
       ),
     );

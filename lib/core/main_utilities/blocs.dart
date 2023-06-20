@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shca/modules/boards/blocs/fetchBoards/fetch_boards_cubit.dart';
+import 'package:shca/modules/boards/repositories/boards_repository.dart';
 import 'package:shca/modules/events/blocs/fetchScences/fetch_scences_cubit.dart';
 import 'package:shca/modules/events/blocs/fetchSchedules/fetch_schedules_cubit.dart';
 import 'package:shca/modules/events/repositories/events_repository.dart';
 import 'package:shca/modules/home/blocs/fetchGroupsCubit/fetch_groups_cubit.dart';
+import 'package:shca/modules/home/blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
 import 'package:shca/modules/home/repositories/home_repository.dart';
-import 'package:shca/modules/home/utils/networking.dart';
-
 import '../../modules/auth/blocs/get_user_data_cubit/get_user_data_cubit.dart';
 import '../../modules/auth/repositories/authentication_repository_impl.dart';
 
@@ -27,11 +28,21 @@ class BlocProviders extends StatelessWidget {
           ),
         ),
         BlocProvider(
+          create: (context) => FetchInterfacesCubit(
+            context.read<HomeRepository>(),
+          )..fetchInterfaces(scope: InterfacesScope.allBoards),
+        ),
+        BlocProvider(
           create: (context) => FetchScencesCubit(
             context.read<EventsRepository>(),
           )..fetchMyScences(),
         ),
-         BlocProvider(
+        BlocProvider(
+          create: (context) => FetchBoardsCubit(
+            context.read<BoardsRepository>(),
+          )..fetchBoards(),
+        ),
+        BlocProvider(
           create: (context) => FetchSchedulesCubit(
             context.read<EventsRepository>(),
           )..fetchMySchedules(),

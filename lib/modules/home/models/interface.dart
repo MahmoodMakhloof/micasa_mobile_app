@@ -10,19 +10,19 @@ class Interface extends Equatable {
   @JsonKey(name: "_id")
   final String id;
 
-  final String name;
+  String name;
   final Board? board;
   final InterfaceType type;
-  final InterfaceDevices? device;
-  final double? value;
+  InterfaceDevices? device;
+  double? value;
 
-   const Interface({
+  Interface({
     required this.id,
     required this.name,
-    required this.board,
+    this.board,
     required this.type,
-     this.device,
-    required this.value,
+    this.device,
+    this.value,
   });
 
   factory Interface.fromJson(Map<String, dynamic> json) =>
@@ -31,23 +31,5 @@ class Interface extends Equatable {
   Map<String, dynamic> toJson() => _$InterfaceToJson(this);
 
   @override
-  List<Object?> get props => [id, name, board,device, value, type];
-
-  Interface copyWith({
-    String? id,
-    String? name,
-    Board? board,
-    InterfaceType? type,
-    InterfaceDevices? device,
-    double? value,
-  }) {
-    return Interface(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      board: board ?? this.board,
-      type: type ?? this.type,
-      device: device ?? this.device,
-      value: value ?? this.value,
-    );
-  }
+  List<Object?> get props => [id, name, board, device, value, type];
 }

@@ -17,12 +17,7 @@ class AllDevicesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) => FetchInterfacesCubit(context.read())
-          ..fetchInterfaces(
-            scope: InterfacesScope.allBoards,
-          ),
-        child: const _AllDevicesView());
+    return const _AllDevicesView();
   }
 }
 
@@ -41,7 +36,7 @@ class _AllDevicesView extends StatelessWidget {
           if (state is FetchInterfacesFailed) {
             return ErrorViewer(state.e!);
           } else if (state is FetchInterfacesSucceeded) {
-            final interfaces = state.interfaces;
+            final interfaces = state.allBoardsInterfaces;
             if (interfaces.isEmpty) {
               return const NoDataView();
             }
@@ -57,6 +52,10 @@ class _AllDevicesView extends StatelessWidget {
                         children: List.generate(
                             interfaces.length,
                             (index) => DeviceItem(
+                              scope: InterfacesScope.allBoards,
+                                onTap: (data) => context
+                                    .read<FetchInterfacesCubit>()
+                                    .updateInterfaceValue(data),
                                 interface: interfaces[index],
                                 color: getRandomColor(
                                         seed: (index + 80967).toString())

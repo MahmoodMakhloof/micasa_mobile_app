@@ -12,10 +12,22 @@ import '../../../core/helpers/style_config.dart';
 import '../blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
 import '../models/group.dart';
 
-class AddDevicesScreen extends StatelessWidget {
+class AddDevicesScreen extends StatefulWidget {
   final Group group;
 
   const AddDevicesScreen({super.key, required this.group});
+
+  @override
+  State<AddDevicesScreen> createState() => _AddDevicesScreenState();
+}
+
+class _AddDevicesScreenState extends State<AddDevicesScreen> {
+  @override
+  void initState() {
+    context.read<FetchInterfacesCubit>().fetchInterfaces(
+        scope: InterfacesScope.toGroup, groupId: widget.group.id);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +35,10 @@ class AddDevicesScreen extends StatelessWidget {
         providers: [
           BlocProvider(
               create: (context) => AddInterfacesToGroupCubit(context.read())),
-          BlocProvider(
-              create: (context) => FetchInterfacesCubit(context.read())
-                ..fetchInterfaces(
-                    scope: InterfacesScope.toGroup, groupId: group.id)),
+          
         ],
         child: _AddDevicesView(
-          group: group,
+          group: widget.group,
         ));
   }
 }
@@ -114,7 +123,7 @@ class _AddDevicesViewState extends State<_AddDevicesView> {
                   if (state is FetchInterfacesFailed) {
                     return ErrorViewer(state.e!);
                   } else if (state is FetchInterfacesSucceeded) {
-                    final interfaces = state.interfaces;
+                    final interfaces = state.toGroupInterfaces;
 
                     if (interfaces.isEmpty) {
                       return const NoDataView();

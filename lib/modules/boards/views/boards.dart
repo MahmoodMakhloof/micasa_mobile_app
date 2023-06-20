@@ -10,7 +10,6 @@ import 'package:shca/widgets/widgets.dart';
 import 'package:utilities/utilities.dart';
 
 import '../../../generated/assets.gen.dart';
-import '../../../widgets/custom_button.dart';
 import '../models/board.dart';
 
 class BoardsScreen extends StatelessWidget {
@@ -18,10 +17,7 @@ class BoardsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => FetchBoardsCubit(context.read())..fetchBoards(),
-      child: const _BoardsView(),
-    );
+    return const _BoardsView();
   }
 }
 
