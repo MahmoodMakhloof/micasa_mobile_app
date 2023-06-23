@@ -84,10 +84,12 @@ class Utils {
         .bestMatchIndex;
 
     var interface = interfaces[index];
-    var data = InterfaceValueChangeData(
-        interfaceId: interface.interfaceId, value: value);
-    NavigationService.context!
-        .read<FetchInterfacesCubit>()
-        .updateInterfaceValue(data);
+    if (interface.interfaceName.similarityTo(name) > 0.6) {
+      var data = InterfaceValueChangeData(
+          interfaceId: interface.interfaceId, value: value);
+      NavigationService.context!
+          .read<FetchInterfacesCubit>()
+          .updateInterfaceValue(data);
+    }
   }
 }
