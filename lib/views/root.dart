@@ -1,3 +1,4 @@
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,18 +13,25 @@ import 'package:shca/generated/locale_keys.g.dart';
 import 'package:shca/modules/boards/views/boards.dart';
 import 'package:shca/modules/home/views/home.dart';
 import 'package:shca/modules/profile/views/profile.dart';
-import 'package:shca/modules/speech/views/speech_view.dart';
+import 'package:shca/modules/speech/utils.dart';
 
 import '../modules/auth/blocs/get_user_data_cubit/get_user_data_cubit.dart';
+import '../modules/events/blocs/fetchEventInterfaces/fetch_event_intefaces_cubit.dart';
+import '../modules/events/models/event_interface.dart';
 import '../modules/events/views/scences.dart';
 import '../modules/events/views/schedules.dart';
+import '../modules/speech/api/speech_api.dart';
 
 class Root extends StatelessWidget {
   const Root({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const _RootView();
+    return BlocProvider(
+      create: (context) =>
+          FetchEventIntefacesCubit(context.read())..fetchEventInterfaces(),
+      child: const _RootView(),
+    );
   }
 }
 
@@ -44,6 +52,8 @@ class _RootViewState extends State<_RootView> {
     ScencesView(),
   ];
 
+  String text = 'Press the button and start speaking';
+  bool isListening = false;
   @override
   void initState() {
     //* start socket
@@ -106,9 +116,24 @@ class _RootViewState extends State<_RootView> {
           ),
         ),
         body: views[currentIndex],
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => context.navigateTo(const SpeechView()),
-          child: const Icon(CupertinoIcons.mic),
+        floatingActionButton:
+            BlocBuilder<FetchEventIntefacesCubit, FetchEventIntefacesState>(
+          builder: (context, state) {
+            if (state is FetchEventIntefacesSucceeded) {
+              return AvatarGlow(
+                animate: isListening,
+                endRadius: 40,
+                glowColor: Theme.of(context).primaryColor,
+                child: FloatingActionButton(
+                  onPressed: () => toggleRecording(state.interfaces),
+                  child: Icon(
+                    isListening ? CupertinoIcons.mic : CupertinoIcons.mic_off,
+                  ),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: BottomNavigationBar(
@@ -153,4 +178,21 @@ class _RootViewState extends State<_RootView> {
                   label: LocaleKeys.pages_scences.tr()),
             ]));
   }
+
+  Future toggleRecording(List<EventInterface> interfaces) =>
+      SpeechApi.toggleRecording(
+        onResult: (text) => setState(() => this.text = text),
+        onListening: (isListening) {
+          setState(() => this.isListening = isListening);
+
+          if (true) {
+            Future.delayed(const Duration(seconds: 1), () {
+              Utils.interfaces = interfaces;
+              Utils.scanText(
+                text,
+              );
+            });
+          }
+        },
+      );
 }

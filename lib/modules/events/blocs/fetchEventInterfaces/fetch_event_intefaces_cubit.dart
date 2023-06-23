@@ -8,13 +8,17 @@ import '../../repositories/events_repository.dart';
 part 'fetch_event_intefaces_state.dart';
 
 class FetchEventIntefacesCubit extends Cubit<FetchEventIntefacesState> {
- final EventsRepository _eventInterfaces;
-  FetchEventIntefacesCubit(this._eventInterfaces) : super(FetchEventIntefacesInitial());
+  final EventsRepository _eventInterfaces;
+  FetchEventIntefacesCubit(this._eventInterfaces)
+      : super(FetchEventIntefacesInitial());
+
+  List<EventInterface> outputInterfaces = [];
 
   void fetchEventInterfaces() async {
     emit(FetchEventIntefacesInProgress());
     try {
       var interfaces = await _eventInterfaces.fetchEventInterfaces();
+      outputInterfaces = interfaces;
       emit(FetchEventIntefacesSucceeded(interfaces: interfaces));
     } catch (e) {
       emit(FetchEventIntefacesFailed(e));

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shca/modules/home/widgets/device_item.dart';
 import 'package:utilities/utilities.dart';
 
 import 'package:shca/generated/assets.gen.dart';
@@ -57,7 +58,7 @@ class _SingleDeviceView extends StatelessWidget {
         child: BlocBuilder<FetchInterfacesCubit, FetchInterfacesState>(
           builder: (context, state) {
             if (state is FetchInterfacesSucceeded) {
-               Interface myInterface;
+              Interface myInterface;
               switch (scope) {
                 case InterfacesScope.allBoards:
                   myInterface = state.allBoardsInterfaces
@@ -78,7 +79,6 @@ class _SingleDeviceView extends StatelessWidget {
                       .singleWhere((i) => i.id == interface.id);
 
                   break;
-
               }
 
               return Column(
@@ -93,21 +93,32 @@ class _SingleDeviceView extends StatelessWidget {
                       )
                     ],
                   ),
-                  InkWell(
-                    splashColor: Colors.grey.shade200,
-                    highlightColor: Colors.transparent,
-                    onTap: () {
-                      if (myInterface.value == 0) {
-                        onTap(InterfaceValueChangeData(
-                            interfaceId: myInterface.id, value: 1));
-                      } else {
-                        onTap(InterfaceValueChangeData(
-                            interfaceId: myInterface.id, value: 0));
-                      }
-                    },
-                    child: (myInterface.value ?? 0) == 0
-                        ? Assets.images.vectors.lampOff.svg()
-                        : Assets.images.vectors.lamp.svg(),
+                  const Spacer(),
+                  Expanded(
+                    flex: 3,
+                    child: InkWell(
+                        enableFeedback: false,
+                        splashColor: Colors.grey.shade200,
+                        highlightColor: Colors.transparent,
+                        onTap: myInterface.type == InterfaceType.AI ||
+                                myInterface.type == InterfaceType.DI
+                            ? null
+                            : () {
+                                if (myInterface.value == 0) {
+                                  onTap(InterfaceValueChangeData(
+                                    interfaceId: myInterface.id,
+                                    value: 1,
+                                  ));
+                                } else {
+                                  onTap(InterfaceValueChangeData(
+                                      interfaceId: myInterface.id, value: 0));
+                                }
+                              },
+                        child: myInterface.device != null
+                            ? myInterface.device!
+                                .toAsset(value: myInterface.value!, isBW: false)
+                            : InterfaceDevices.lamp.toAsset(
+                                value: myInterface.value!, isBW: false)),
                   ),
                   const Spacer(),
                   Padding(
@@ -115,6 +126,31 @@ class _SingleDeviceView extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
+                        if (interface.type == InterfaceType.DI) ...[
+                          CircleAvatar(
+                            radius: 33,
+                            backgroundColor: CColors.background,
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundColor: interface.value == 0
+                                  ? Colors.green
+                                  : Colors.red,
+                            ),
+                          ),
+                        ],
+                        if (interface.type == InterfaceType.AI) ...[
+                          Padding(
+                            padding: const EdgeInsets.only(top: 15),
+                            child: Text(
+                              interface.value!.toInt().toString(),
+                              style: Style.appTheme.textTheme.bodyLarge!
+                                  .copyWith(
+                                      height: 1.5,
+                                      fontSize: 90,
+                                      color: Colors.black87),
+                            ),
+                          ),
+                        ],
                         Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -179,7 +215,7 @@ class _SingleDeviceView extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Spacer()
+                  const Space.v40()
                 ],
               );
             }

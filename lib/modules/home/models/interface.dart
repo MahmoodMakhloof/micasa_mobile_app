@@ -13,7 +13,7 @@ class Interface extends Equatable {
   String name;
   final Board? board;
   final InterfaceType type;
-  InterfaceDevices? device;
+  final InterfaceDevices? device;
   double? value;
 
   Interface({

@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -49,8 +49,12 @@ class FetchInterfacesCubit extends Cubit<FetchInterfacesState> {
   void _changeValueInInterfacesList(
       List<Interface> interfaces, InterfaceValueChangeData data) {
     if (interfaces.isNotEmpty) {
-      interfaces.firstWhere((i) => i.id == data.interfaceId).value =
-          data.value;
+      try {
+        interfaces.firstWhere((i) => i.id == data.interfaceId).value =
+            data.value;
+      } catch (e) {
+        log(e.toString());
+      }
     }
   }
 

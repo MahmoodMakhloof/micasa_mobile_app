@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/modules/boards/blocs/fetchBoards/fetch_boards_cubit.dart';
@@ -31,6 +32,19 @@ class _BoardsView extends StatelessWidget {
         children: [
           const Space.v10(),
           const ScanWidget(),
+          const Space.v10(),
+          const NetworksWidget(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Row(
+              children: [
+                Text(
+                  "Boards",
+                  style: Style.appTheme.textTheme.bodyLarge,
+                ),
+              ],
+            ),
+          ),
           BlocBuilder<FetchBoardsCubit, FetchBoardsState>(
             builder: (context, state) {
               if (state is FetchBoardsFailed) {
@@ -57,6 +71,82 @@ class _BoardsView extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class NetworksWidget extends StatelessWidget {
+  const NetworksWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String?>(
+        future: NetworkInfo().getWifiName(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data != null) {
+            var wifiName = snapshot.data;
+
+            return Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        "Network",
+                        style: Style.appTheme.textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
+                  const Space.v10(),
+                  InkWell(
+                    onTap: () {},
+                    child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade200),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Row(
+                            children: [
+                              Assets.images.vectors.router.svg(height: 50),
+                              const Space.h30(),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    wifiName!.replaceAll('"', ""),
+                                    style: Style.appTheme.textTheme.bodyLarge!
+                                        .copyWith(height: 1),
+                                  ),
+                                  const Text(
+                                    "Connected",
+                                    style: TextStyle(
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Spacer(),
+                              IconButton(
+                                icon: const Icon(
+                                  CupertinoIcons.forward,
+                                  size: 18,
+                                ),
+                                onPressed: () {},
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
+                ],
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        });
   }
 }
 
@@ -122,7 +212,7 @@ class BoardItem extends StatelessWidget {
             child: Row(
               children: [
                 Assets.images.vectors.board.svg(height: 50),
-                Space.h30(),
+                const Space.h30(),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

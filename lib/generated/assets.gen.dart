@@ -89,6 +89,45 @@ class $AssetsImagesVectorsGen {
   /// File path: assets/images/vectors/bulb.svg
   SvgGenImage get bulb => const SvgGenImage('assets/images/vectors/bulb.svg');
 
+  /// File path: assets/images/vectors/bw-ac.svg
+  SvgGenImage get bwAc => const SvgGenImage('assets/images/vectors/bw-ac.svg');
+
+  /// File path: assets/images/vectors/bw-curtains.svg
+  SvgGenImage get bwCurtains =>
+      const SvgGenImage('assets/images/vectors/bw-curtains.svg');
+
+  /// File path: assets/images/vectors/bw-desklamp.svg
+  SvgGenImage get bwDesklamp =>
+      const SvgGenImage('assets/images/vectors/bw-desklamp.svg');
+
+  /// File path: assets/images/vectors/bw-door.svg
+  SvgGenImage get bwDoor =>
+      const SvgGenImage('assets/images/vectors/bw-door.svg');
+
+  /// File path: assets/images/vectors/bw-fan.svg
+  SvgGenImage get bwFan =>
+      const SvgGenImage('assets/images/vectors/bw-fan.svg');
+
+  /// File path: assets/images/vectors/bw-fire.svg
+  SvgGenImage get bwFire =>
+      const SvgGenImage('assets/images/vectors/bw-fire.svg');
+
+  /// File path: assets/images/vectors/bw-lamp.svg
+  SvgGenImage get bwLamp =>
+      const SvgGenImage('assets/images/vectors/bw-lamp.svg');
+
+  /// File path: assets/images/vectors/bw-lock.svg
+  SvgGenImage get bwLock =>
+      const SvgGenImage('assets/images/vectors/bw-lock.svg');
+
+  /// File path: assets/images/vectors/bw-smoke.svg
+  SvgGenImage get bwSmoke =>
+      const SvgGenImage('assets/images/vectors/bw-smoke.svg');
+
+  /// File path: assets/images/vectors/bw-temperature.svg
+  SvgGenImage get bwTemperature =>
+      const SvgGenImage('assets/images/vectors/bw-temperature.svg');
+
   /// File path: assets/images/vectors/calendar.svg
   SvgGenImage get calendar =>
       const SvgGenImage('assets/images/vectors/calendar.svg');
@@ -107,6 +146,10 @@ class $AssetsImagesVectorsGen {
   /// File path: assets/images/vectors/cloudy.svg
   SvgGenImage get cloudy =>
       const SvgGenImage('assets/images/vectors/cloudy.svg');
+
+  /// File path: assets/images/vectors/cold-temp.svg
+  SvgGenImage get coldTemp =>
+      const SvgGenImage('assets/images/vectors/cold-temp.svg');
 
   /// File path: assets/images/vectors/desk-lamp.svg
   SvgGenImage get deskLamp =>
@@ -135,6 +178,10 @@ class $AssetsImagesVectorsGen {
 
   /// File path: assets/images/vectors/home.svg
   SvgGenImage get home => const SvgGenImage('assets/images/vectors/home.svg');
+
+  /// File path: assets/images/vectors/hot-temp.svg
+  SvgGenImage get hotTemp =>
+      const SvgGenImage('assets/images/vectors/hot-temp.svg');
 
   /// File path: assets/images/vectors/info.svg
   SvgGenImage get info => const SvgGenImage('assets/images/vectors/info.svg');
@@ -166,6 +213,10 @@ class $AssetsImagesVectorsGen {
 
   /// File path: assets/images/vectors/relax.svg
   SvgGenImage get relax => const SvgGenImage('assets/images/vectors/relax.svg');
+
+  /// File path: assets/images/vectors/router.svg
+  SvgGenImage get router =>
+      const SvgGenImage('assets/images/vectors/router.svg');
 
   /// File path: assets/images/vectors/scan.svg
   SvgGenImage get scan => const SvgGenImage('assets/images/vectors/scan.svg');
@@ -231,11 +282,22 @@ class $AssetsImagesVectorsGen {
         board,
         bookmark,
         bulb,
+        bwAc,
+        bwCurtains,
+        bwDesklamp,
+        bwDoor,
+        bwFan,
+        bwFire,
+        bwLamp,
+        bwLock,
+        bwSmoke,
+        bwTemperature,
         calendar,
         chartNetwork,
         clapperboard,
         clock,
         cloudy,
+        coldTemp,
         deskLamp,
         dollar,
         envelope,
@@ -244,6 +306,7 @@ class $AssetsImagesVectorsGen {
         globe,
         heart,
         home,
+        hotTemp,
         info,
         lampOff,
         lamp,
@@ -253,6 +316,7 @@ class $AssetsImagesVectorsGen {
         padlock,
         play,
         relax,
+        router,
         scan,
         schedule,
         search,

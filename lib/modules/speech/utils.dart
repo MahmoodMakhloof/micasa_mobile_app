@@ -1,29 +1,63 @@
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:string_similarity/string_similarity.dart';
+import 'package:utilities/utilities.dart';
+
+import 'package:shca/modules/events/models/event_interface.dart';
+import 'package:shca/modules/home/blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
+
+import '../../core/rtc/events.dart';
 
 class Command {
-  static final all = [email, browser1, browser2];
+  static final all = [
+    open,
+    turnOn,
+    close,
+    turnOff,
+    arOpen,
+    arTurnOn,
+    arClose,
+    arTurnOff
+  ];
 
-  static const email = 'write email';
-  static const browser1 = 'open';
-  static const browser2 = 'go to';
+  static const open = CommandModel(name: "open", value: 1);
+  static const turnOn = CommandModel(name: "turn on", value: 1);
+  static const close = CommandModel(name: "close", value: 0);
+  static const turnOff = CommandModel(name: "turn off", value: 0);
+
+  static const arOpen = CommandModel(name: "افتح", value: 1);
+  static const arTurnOn = CommandModel(name: "شغل", value: 1);
+  static const arClose = CommandModel(name: "اقفل", value: 0);
+  static const arTurnOff = CommandModel(name: "اطفي", value: 0);
+}
+
+class CommandModel {
+  final String name;
+  final double value;
+  const CommandModel({
+    required this.name,
+    required this.value,
+  });
 }
 
 class Utils {
-  static void scanText(String rawText) {
+  static List<EventInterface> interfaces = [];
+
+  static void scanText(
+    String rawText,
+  ) {
     final text = rawText.toLowerCase();
 
-    if (text.contains(Command.email)) {
-      final body = _getTextAfterCommand(text: text, command: Command.email);
+    for (var command in Command.all) {
+      if (text.contains(command.name)) {
+        final interfaceName =
+            _getTextAfterCommand(text: text, command: command.name);
 
-      openEmail(body: body);
-    } else if (text.contains(Command.browser1)) {
-      final url = _getTextAfterCommand(text: text, command: Command.browser1);
+        if (interfaceName != null) {
+          _changeInterfaceValue(interfaceName, command.value);
+        }
 
-      openLink(url: url);
-    } else if (text.contains(Command.browser2)) {
-      final url = _getTextAfterCommand(text: text, command: Command.browser2);
-
-      openLink(url: url);
+        break;
+      }
     }
   }
 
@@ -41,32 +75,19 @@ class Utils {
     }
   }
 
-  static Future openLink({
-    required String? url,
-  }) async {
-    if (url != null) {
-      if (url.trim().isEmpty) {
-        await _launchUrl('https://google.com');
-      } else {
-        await _launchUrl('https://$url');
-      }
-    }
-  }
+  static void _changeInterfaceValue(
+    String name,
+    double value,
+  ) {
+    var index = StringSimilarity.findBestMatch(
+            name, interfaces.map((e) => e.interfaceName).toList())
+        .bestMatchIndex;
 
-  static Future openEmail({
-    required String? body,
-  }) async {
-    if (body != null) {
-      final url = 'mailto: ?body=${Uri.encodeFull(body)}';
-      await _launchUrl(url);
-    }
-  }
-
-  static Future _launchUrl(String? url) async {
-    if (url != null) {
-      if (await canLaunchUrl(Uri(path: url))) {
-        await launchUrl(Uri(path: url));
-      }
-    }
+    var interface = interfaces[index];
+    var data = InterfaceValueChangeData(
+        interfaceId: interface.interfaceId, value: value);
+    NavigationService.context!
+        .read<FetchInterfacesCubit>()
+        .updateInterfaceValue(data);
   }
 }
