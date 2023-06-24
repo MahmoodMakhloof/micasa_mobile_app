@@ -13,10 +13,8 @@ Schedule _$ScheduleFromJson(Map<String, dynamic> json) => $checkedCreate(
         final val = Schedule(
           id: $checkedConvert('_id', (v) => v as String),
           name: $checkedConvert('name', (v) => v as String),
+          cron: $checkedConvert('cron', (v) => v as String),
           enabled: $checkedConvert('enabled', (v) => v as bool),
-          repeated: $checkedConvert('repeated', (v) => v as bool),
-          days: $checkedConvert('days', (v) => v as List<dynamic>),
-          time: $checkedConvert('time', (v) => v as String),
           events: $checkedConvert(
               'events',
               (v) => (v as List<dynamic>)
@@ -31,9 +29,7 @@ Schedule _$ScheduleFromJson(Map<String, dynamic> json) => $checkedCreate(
 Map<String, dynamic> _$ScheduleToJson(Schedule instance) => <String, dynamic>{
       '_id': instance.id,
       'name': instance.name,
+      'cron': instance.cron,
       'enabled': instance.enabled,
-      'repeated': instance.repeated,
-      'days': instance.days,
-      'time': instance.time,
       'events': instance.events.map((e) => e.toJson()).toList(),
     };

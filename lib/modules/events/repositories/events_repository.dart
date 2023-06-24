@@ -58,9 +58,8 @@ class EventsRepository {
   Future<Schedule> createNewSchedule(
       {required String name,
       required String description,
-      required bool isRepeated,
-      required List<bool> days,
-      required String time,
+     
+      required String cron,
       required List<Event> events}) async {
     try {
       final uri = EventsNetworking.createSchedule;
@@ -69,10 +68,8 @@ class EventsRepository {
         uri,
         data: {
           "name": name,
-          "repeated":isRepeated,
           "description": description,
-          "days":days,
-          "time":time,
+          "cron":cron,
           "events": (events.map((e) => e.toJson()).toList())
         },
         options: commonOptionsWithCustom(customOptions: customOptions),

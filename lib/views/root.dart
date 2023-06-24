@@ -122,12 +122,12 @@ class _RootViewState extends State<_RootView> {
             if (state is FetchEventIntefacesSucceeded) {
               return AvatarGlow(
                 animate: isListening,
-                endRadius: 40,
-                glowColor: Theme.of(context).primaryColor,
+                endRadius: 45,
+                glowColor: CColors.primary,
                 child: FloatingActionButton(
                   onPressed: () => toggleRecording(state.interfaces),
                   child: Icon(
-                    isListening ? CupertinoIcons.mic : CupertinoIcons.mic_off,
+                    isListening ? CupertinoIcons.ellipsis : CupertinoIcons.mic,
                   ),
                 ),
               );

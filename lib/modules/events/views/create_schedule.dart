@@ -1,8 +1,14 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:day_night_time_picker/lib/daynight_timepicker.dart';
 import 'package:day_night_time_picker/lib/state/time.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:utilities/utilities.dart';
+import 'package:weekday_selector/weekday_selector.dart';
+
 import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/modules/events/blocs/createSchedule/create_schedule_cubit.dart';
 import 'package:shca/modules/events/blocs/fetchEventInterfaces/fetch_event_intefaces_cubit.dart';
@@ -11,8 +17,66 @@ import 'package:shca/modules/events/models/scence.dart';
 import 'package:shca/modules/events/views/create_scence.dart';
 import 'package:shca/widgets/back_button.dart';
 import 'package:shca/widgets/widgets.dart';
-import 'package:utilities/utilities.dart';
-import 'package:weekday_selector/weekday_selector.dart';
+
+class MyDay {
+  final String name;
+  final int id;
+  bool isSelected;
+
+  MyDay({
+    required this.name,
+    required this.id,
+    this.isSelected = false,
+  });
+
+  MyDay copyWith({
+    String? name,
+    int? id,
+    bool? isSelected,
+  }) {
+    return MyDay(
+      name: name ?? this.name,
+      id: id ?? this.id,
+      isSelected: isSelected ?? this.isSelected,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'id': id,
+      'isSelected': isSelected,
+    };
+  }
+
+  factory MyDay.fromMap(Map<String, dynamic> map) {
+    return MyDay(
+      name: map['name'] ?? '',
+      id: map['id']?.toInt() ?? 0,
+      isSelected: map['isSelected'] ?? false,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory MyDay.fromJson(String source) => MyDay.fromMap(json.decode(source));
+
+  @override
+  String toString() => 'MyDay(name: $name, id: $id, isSelected: $isSelected)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is MyDay &&
+        other.name == name &&
+        other.id == id &&
+        other.isSelected == isSelected;
+  }
+
+  @override
+  int get hashCode => name.hashCode ^ id.hashCode ^ isSelected.hashCode;
+}
 
 class CreateScheuleScreen extends StatelessWidget {
   const CreateScheuleScreen({super.key});
@@ -57,7 +121,15 @@ class _CreateScheuleViewState extends State<_CreateScheuleView> {
 
   final GlobalKey _formKey = GlobalKey<FormState>();
 
-  final _days = List.filled(7, true);
+  final _days = [
+    MyDay(name: "SUN", id: 0),
+    MyDay(name: "MON", id: 1),
+    MyDay(name: "TUE", id: 2),
+    MyDay(name: "WED", id: 3),
+    MyDay(name: "THU", id: 4),
+    MyDay(name: "FRI", id: 5),
+    MyDay(name: "SAT", id: 6),
+  ];
 
   bool _isRepeated = true;
 
@@ -77,6 +149,38 @@ class _CreateScheuleViewState extends State<_CreateScheuleView> {
     return _nameController.text.isNotEmpty &&
         _descriptionController.text.isNotEmpty &&
         _isEventsValid();
+  }
+
+  String _convertScheduleDataToCron(
+      {required bool isRepeated,
+      required Time time,
+      required List<MyDay> days}) {
+    //* Time (hours and minutes)
+    var s = time.second;
+    var h = time.hour;
+    var m = time.minute;
+
+    //* Date and Weak days
+    String day;
+    String month;
+    String year;
+
+    String daysStr;
+
+    if (isRepeated && days.any((element) => element.isSelected)) {
+      year = "*";
+      month = "*";
+      day = "*";
+      daysStr = days.map((e) => e.name).toList().join(",");
+    } else {
+      day = DateTime.now().day.toString();
+      month = DateTime.now().month.toString();
+      year = DateTime.now().year.toString();
+      daysStr = "*";
+    }
+    var cron = "$s $m $h $day $month $daysStr $year";
+    log("Cron => $cron");
+    return cron;
   }
 
   @override
@@ -104,9 +208,12 @@ class _CreateScheuleViewState extends State<_CreateScheuleView> {
                         onPressed: () {
                           context.read<CreateScheduleCubit>().createNewSchedule(
                               name: _nameController.text,
-                              isRepeated: _isRepeated,
-                              days: _days,
-                              time: _time.format(context),
+                              cron: _convertScheduleDataToCron(
+                                  days: _days
+                                      .where((element) => element.isSelected)
+                                      .toList(),
+                                  isRepeated: _isRepeated,
+                                  time: _time),
                               description: _descriptionController.text,
                               events: events);
                         },
@@ -216,7 +323,7 @@ class _CreateScheuleViewState extends State<_CreateScheuleView> {
                         ),
                       ),
                     ),
-                    const Text("Repeated"),
+                    Text(_isRepeated ? "Repeated" : "Today Only"),
                     Switch(
                         value: _isRepeated,
                         onChanged: ((value) => setState(() {
@@ -249,10 +356,10 @@ class _CreateScheuleViewState extends State<_CreateScheuleView> {
                         // perform validation, a DB write, an HTTP call or anything
                         // else before you actually flip the value,
                         // it's up to your app's needs.
-                        _days[index] = !_days[index];
+                        _days[index].isSelected = !_days[index].isSelected;
                       });
                     },
-                    values: _days,
+                    values: _days.map((e) => e.isSelected).toList(),
                   ),
                 ),
               ],

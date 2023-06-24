@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/modules/home/blocs/createGroup/create_group_cubit.dart';
@@ -62,26 +63,29 @@ class _AllRoomsViewState extends State<_AllRoomsView> {
             if (groups.isEmpty) {
               return const NoDataView();
             }
-            return GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    childAspectRatio: 3 / 4,
-                    crossAxisSpacing: 5,
-                    mainAxisSpacing: 5),
-                itemCount: groups.length,
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(10),
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: ((context, index) => RoomItem(
-                    onTap: () => context.navigateTo(
-                          SingleRoomScreen(
-                            group: groups[index],
-                            groups: groups,
-                          ),
-                        ),
-                    group: groups[index],
-                    color: getRandomColor(seed: (groups[index].id).toString())
-                        .color)));
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: StaggeredGrid.count(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 5,
+                  crossAxisSpacing: 5,
+                  children: List.generate(
+                      groups.length,
+                      (index) => RoomItem(
+                          onTap: () => context.navigateTo(
+                                SingleRoomScreen(
+                                  group: groups[index],
+                                  groups: groups,
+                                ),
+                              ),
+                          group: groups[index],
+                          color: getRandomColor(
+                                  seed: (groups[index].id).toString())
+                              .color)),
+                ),
+              ),
+            );
           }
 
           return const Center(child: CircularProgressIndicator());

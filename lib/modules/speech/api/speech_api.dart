@@ -22,10 +22,11 @@ class SpeechApi {
 
     if (isAvailable) {
       _speech.listen(
-          localeId: "ar",
-          onResult: (value) => onResult(value.recognizedWords));
+          localeId: "ar", onResult: (value) => onResult(value.recognizedWords));
     }
 
     return isAvailable;
   }
+
+  
 }

@@ -148,7 +148,7 @@ class DeviceItem extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-            color: color, borderRadius: BorderRadius.circular(10)),
+            color: Colors.white, borderRadius: BorderRadius.circular(10)),
         child: Center(
           child: Column(
             children: [
@@ -214,19 +214,19 @@ class DeviceItem extends StatelessWidget {
                                   .copyWith(
                                       height: 1.5,
                                       fontSize: 40,
-                                      color: Colors.white),
+                                      color: Colors.black),
                             ),
                           ),
                         ],
                         Text(
                           interface.name,
                           style: Style.appTheme.textTheme.bodyLarge!
-                              .copyWith(height: 1.5, color: Colors.white),
+                              .copyWith(height: 1.5, color: Colors.black),
                         ),
                         Text(
                           interface.board!.name,
                           style: Style.appTheme.textTheme.bodyMedium!
-                              .copyWith(height: 1.5, color: Colors.white70),
+                              .copyWith(height: 1.5, color: Colors.black54),
                         )
                       ]),
                 ],

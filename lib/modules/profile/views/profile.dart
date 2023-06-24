@@ -2,7 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
+import 'package:shca/modules/profile/views/my_qr.dart';
 import 'package:shca/widgets/back_button.dart';
 import 'package:utilities/utilities.dart';
 
@@ -17,35 +19,25 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           leading: const MyBackButton(),
-          title: BlocBuilder<GetUserDataCubit, GetUserDataState>(
-            builder: (context, state) {
-              if (state is GetUserDataSucceeded) {
-                return Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 18,
-                      backgroundImage: CachedNetworkImageProvider(
-                        state.user.avatar!,
-                      ),
-                    ),
-                    const Space.h15(),
-                    Expanded(child: Text(state.user.fullname ?? ''))
-                  ],
-                );
-              }
-              return const Text("Profile");
-            },
-          ),
+          title: const Text("Profile"),
           actions: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    FontAwesomeIcons.userPen,
-                    size: 20,
-                  )),
-            )
+            BlocBuilder<GetUserDataCubit, GetUserDataState>(
+              builder: (context, state) {
+                if (state is GetUserDataSucceeded) {
+                  return IconButton(
+                      onPressed: () =>
+                          context.navigateTo(MyQrCodeScreen(me: state.user)),
+                      icon: const Icon(
+                        FontAwesomeIcons.qrcode,
+                        size: 20,
+                      ));
+                }
+                return const Icon(
+                  FontAwesomeIcons.qrcode,
+                  size: 20,
+                );
+              },
+            ),
           ],
         ),
         floatingActionButton: FloatingActionButton(
@@ -56,7 +48,7 @@ class ProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Column(
               children: [
-                Space.v10(),
+                const Space.v10(),
                 ListView.separated(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,

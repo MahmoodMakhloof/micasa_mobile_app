@@ -16,18 +16,15 @@ class CreateScheduleCubit extends Cubit<CreateScheduleState> {
   void createNewSchedule(
       {required String name,
       required String description,
-      required bool isRepeated,
-      required List<bool> days,
-      required String time,
+      required String cron,
+
       required List<Event> events}) async {
     emit(CreateScheduleInProgress());
     try {
       final schedule = await _scheduleRepository.createNewSchedule(
           name: name,
           description: description,
-          days: days,
-          time: time,
-          isRepeated: isRepeated,
+          cron: cron,
           events: events);
       emit(CreateScheduleSucceeded(schedule: schedule));
     } catch (e) {

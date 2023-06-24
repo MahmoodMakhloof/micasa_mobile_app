@@ -112,7 +112,7 @@ class _AddRoomViewState extends State<_AddRoomView> {
                     if (state is FetchInterfacesFailed) {
                       return ErrorViewer(state.e!);
                     } else if (state is FetchInterfacesSucceeded) {
-                      final interfaces = state.toGroupInterfaces;
+                      final interfaces = state.allBoardsInterfaces;
 
                       if (interfaces.isEmpty) {
                         return const NoDataView();

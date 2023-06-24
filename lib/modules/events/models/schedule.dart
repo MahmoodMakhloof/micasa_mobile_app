@@ -9,18 +9,14 @@ class Schedule extends Equatable {
   @JsonKey(name: "_id")
   final String id;
   final String name;
+  final String cron;
   final bool enabled;
-  final bool repeated;
-  final List days;
-  final String time;
   final List<Event> events;
   const Schedule({
     required this.id,
     required this.name,
+    required this.cron,
     required this.enabled,
-    required this.repeated,
-    required this.days,
-    required this.time,
     required this.events,
   });
 
@@ -30,16 +26,12 @@ class Schedule extends Equatable {
   Map<String, dynamic> toJson() => _$ScheduleToJson(this);
 
   @override
-
   @override
   List<Object> get props {
     return [
       id,
       name,
       enabled,
-      repeated,
-      days,
-      time,
       events,
     ];
   }
