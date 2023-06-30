@@ -58,8 +58,8 @@ class EventsRepository {
   Future<Schedule> createNewSchedule(
       {required String name,
       required String description,
-     
-      required String cron,
+      required String? datetime,
+      required String? cron,
       required List<Event> events}) async {
     try {
       final uri = EventsNetworking.createSchedule;
@@ -69,7 +69,8 @@ class EventsRepository {
         data: {
           "name": name,
           "description": description,
-          "cron":cron,
+          "cron": cron,
+          "datetime": datetime,
           "events": (events.map((e) => e.toJson()).toList())
         },
         options: commonOptionsWithCustom(customOptions: customOptions),

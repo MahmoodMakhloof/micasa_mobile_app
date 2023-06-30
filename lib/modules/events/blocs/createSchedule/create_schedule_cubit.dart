@@ -16,8 +16,8 @@ class CreateScheduleCubit extends Cubit<CreateScheduleState> {
   void createNewSchedule(
       {required String name,
       required String description,
-      required String cron,
-
+      required String? cron,
+      required String? datetime,
       required List<Event> events}) async {
     emit(CreateScheduleInProgress());
     try {
@@ -25,6 +25,7 @@ class CreateScheduleCubit extends Cubit<CreateScheduleState> {
           name: name,
           description: description,
           cron: cron,
+          datetime: datetime,
           events: events);
       emit(CreateScheduleSucceeded(schedule: schedule));
     } catch (e) {

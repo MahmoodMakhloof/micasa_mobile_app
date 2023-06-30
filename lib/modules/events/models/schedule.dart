@@ -9,13 +9,15 @@ class Schedule extends Equatable {
   @JsonKey(name: "_id")
   final String id;
   final String name;
-  final String cron;
+  final String? cron;
+  final String? datetime;
   final bool enabled;
   final List<Event> events;
   const Schedule({
     required this.id,
     required this.name,
     required this.cron,
+    required this.datetime,
     required this.enabled,
     required this.events,
   });
@@ -27,10 +29,12 @@ class Schedule extends Equatable {
 
   @override
   @override
-  List<Object> get props {
+  List<Object?> get props {
     return [
       id,
       name,
+      datetime,
+      cron,
       enabled,
       events,
     ];

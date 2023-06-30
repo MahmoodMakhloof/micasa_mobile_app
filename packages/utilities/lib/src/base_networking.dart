@@ -1,6 +1,6 @@
 class Network {
   Network._();
 
-  static final siteUri =
-      Uri.parse('https://5cd5-154-182-208-237.ngrok-free.app/api');
+  static final uri = Uri.parse('https://e7b0-197-40-255-194.ngrok-free.app');
+  static final siteUri = Uri.parse('$uri/api');
 }

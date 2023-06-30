@@ -7,8 +7,7 @@ class SocketIOHelper {
 
   static void init() {
     try {
-      socket = io
-          .io("https://5cd5-154-182-208-237.ngrok-free.app", <String, dynamic>{
+      socket = io.io("https://e7b0-197-40-255-194.ngrok-free.app", <String, dynamic>{
         'autoConnect': true,
         'transports': ['websocket'],
       });

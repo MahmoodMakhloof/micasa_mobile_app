@@ -104,15 +104,18 @@ class ScheduleItem extends StatelessWidget {
         child: ListTile(
           leading: const Icon(FontAwesomeIcons.clock),
           title: Text(schedule.name),
-          subtitle: Text(cronToTime(schedule.cron)),
-          trailing: Switch(value: schedule.enabled, onChanged: (value) {}),
+          subtitle: schedule.cron != null
+              ? Text(cronToTime(schedule.cron!))
+              : Text(schedule.datetime!),
+          trailing: Switch(value: schedule.enabled, onChanged: (value) {
+          }),
         ));
   }
 
   String cronToTime(String cron) {
     final elements = cron.split(" ");
-    final m = elements[1];
-    final h = elements[2];
+    final m = elements[0];
+    final h = elements[1];
     var trueH = (int.parse(h) < 12 ? h : int.parse(h) - 12).toString();
 
     var postfix = h == trueH ? "AM" : "PM";

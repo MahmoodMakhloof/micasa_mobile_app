@@ -11,7 +11,6 @@ import 'package:shca/firebase_options.dart';
 import 'package:utilities/utilities.dart';
 
 import 'core/main_utilities/repositories.dart';
-import 'core/rtc/socket_io._helper.dart';
 
 /*
 ? Get key SHA1: run `keytool -list -v -keystore debug.jks  -alias debug`

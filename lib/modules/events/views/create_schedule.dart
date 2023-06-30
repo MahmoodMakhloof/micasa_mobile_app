@@ -6,6 +6,7 @@ import 'package:day_night_time_picker/lib/state/time.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scroll_date_picker/scroll_date_picker.dart';
 import 'package:utilities/utilities.dart';
 import 'package:weekday_selector/weekday_selector.dart';
 
@@ -133,6 +134,8 @@ class _CreateScheuleViewState extends State<_CreateScheuleView> {
 
   bool _isRepeated = true;
 
+  DateTime _selectedDate = DateTime.now();
+
   Time _time = Time(hour: DateTime.now().hour, minute: DateTime.now().minute);
 
   bool _isEventsValid() {
@@ -152,33 +155,25 @@ class _CreateScheuleViewState extends State<_CreateScheuleView> {
   }
 
   String _convertScheduleDataToCron(
-      {required bool isRepeated,
-      required Time time,
-      required List<MyDay> days}) {
+      {required Time time, required List<MyDay> days}) {
     //* Time (hours and minutes)
-    var s = time.second;
     var h = time.hour;
     var m = time.minute;
 
     //* Date and Weak days
-    String day;
-    String month;
-    String year;
 
     String daysStr;
 
-    if (isRepeated && days.any((element) => element.isSelected)) {
-      year = "*";
-      month = "*";
-      day = "*";
-      daysStr = days.map((e) => e.name).toList().join(",");
+    if (days.isNotEmpty) {
+      if (days.length == 7) {
+        daysStr = "*";
+      } else {
+        daysStr = days.map((e) => e.id).toList().join(",");
+      }
     } else {
-      day = DateTime.now().day.toString();
-      month = DateTime.now().month.toString();
-      year = DateTime.now().year.toString();
       daysStr = "*";
     }
-    var cron = "$s $m $h $day $month $daysStr $year";
+    var cron = "$m $h * * $daysStr";
     log("Cron => $cron");
     return cron;
   }
@@ -206,14 +201,25 @@ class _CreateScheuleViewState extends State<_CreateScheuleView> {
                         isLoading: state is CreateScheduleInProgress,
                         enabled: _isEnabled(),
                         onPressed: () {
+                          String? datetime;
+                          String? cron;
+                          var days = _days
+                              .where((element) => element.isSelected)
+                              .toList();
+                          if (_isRepeated && days.isNotEmpty) {
+                            datetime = null;
+                            cron = _convertScheduleDataToCron(
+                                days: days, time: _time);
+                          } else {
+                            cron = null;
+                            datetime = _selectedDate.copyWith(
+                                hour: _time.hour, minute: _time.minute).toIso8601String();
+                            log("datetime ==> $datetime");
+                          }
                           context.read<CreateScheduleCubit>().createNewSchedule(
                               name: _nameController.text,
-                              cron: _convertScheduleDataToCron(
-                                  days: _days
-                                      .where((element) => element.isSelected)
-                                      .toList(),
-                                  isRepeated: _isRepeated,
-                                  time: _time),
+                              cron: cron,
+                              datetime: datetime,
                               description: _descriptionController.text,
                               events: events);
                         },
@@ -323,7 +329,10 @@ class _CreateScheuleViewState extends State<_CreateScheuleView> {
                         ),
                       ),
                     ),
-                    Text(_isRepeated ? "Repeated" : "Today Only"),
+                    Text(
+                      _isRepeated ? "Repeated" : "Not Repeated",
+                      style: Style.appTheme.textTheme.bodySmall,
+                    ),
                     Switch(
                         value: _isRepeated,
                         onChanged: ((value) => setState(() {
@@ -333,7 +342,7 @@ class _CreateScheuleViewState extends State<_CreateScheuleView> {
                 ),
               ),
               if (_isRepeated) ...[
-                const Space.v20(),
+                // const Space.v20(),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Text(
@@ -344,7 +353,7 @@ class _CreateScheuleViewState extends State<_CreateScheuleView> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: WeekdaySelector(
-                    selectedFillColor: CColors.gr1,
+                    selectedFillColor: CColors.primary,
                     firstDayOfWeek: 0,
                     elevation: 3,
                     onChanged: (int day) {
@@ -360,6 +369,49 @@ class _CreateScheuleViewState extends State<_CreateScheuleView> {
                       });
                     },
                     values: _days.map((e) => e.isSelected).toList(),
+                  ),
+                ),
+              ],
+              if (!_isRepeated) ...[
+                // Space.v15(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Text(
+                        "Date",
+                        style: Style.appTheme.textTheme.titleLarge,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedDate = DateTime.now();
+                        });
+                      },
+                      child: Text(
+                        "Set Today",
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 100,
+                  child: ScrollDatePicker(
+                    options: DatePickerOptions(
+                      backgroundColor: CColors.background,
+                    ),
+                    selectedDate: _selectedDate,
+                    minimumDate: DateTime.now(),
+                    maximumDate:
+                        DateTime.now().copyWith(year: DateTime.now().year + 1),
+                    locale: Locale('ar'),
+                    onDateTimeChanged: (DateTime value) {
+                      setState(() {
+                        _selectedDate = value;
+                      });
+                    },
                   ),
                 ),
               ],
