@@ -9,17 +9,19 @@ part 'group.g.dart';
 class Group extends Equatable {
   @JsonKey(name: "_id")
   final String id;
-  final String name;
+  String name;
+   GroupPic image;
   final List<String> interfaces;
   final List<UserModel> users;
   final UserModel? admin;
 
-  const Group({
+  Group({
     required this.id,
     required this.name,
-    required this.admin,
+    required this.image,
     required this.interfaces,
     required this.users,
+    required this.admin,
   });
 
   factory Group.fromJson(Map<String, dynamic> json) => _$GroupFromJson(json);
@@ -30,12 +32,16 @@ class Group extends Equatable {
   List<Object?> get props => [
         id,
         name,
-        admin
+        admin,
+        image,
+        interfaces,
+        users,
       ];
 
   Group copyWith({
     String? id,
     String? name,
+    GroupPic? image,
     List<String>? interfaces,
     List<UserModel>? users,
     UserModel? admin,
@@ -43,9 +49,44 @@ class Group extends Equatable {
     return Group(
       id: id ?? this.id,
       name: name ?? this.name,
+      image: image ?? this.image,
       interfaces: interfaces ?? this.interfaces,
       users: users ?? this.users,
       admin: admin ?? this.admin,
+    );
+  }
+}
+
+@JsonSerializable()
+class GroupPic extends Equatable {
+  @JsonKey(name: "_id")
+  final String id;
+  final String name;
+  final String url;
+
+  const GroupPic({
+    required this.id,
+    required this.name,
+    required this.url,
+  });
+
+  factory GroupPic.fromJson(Map<String, dynamic> json) =>
+      _$GroupPicFromJson(json);
+
+  Map<String, dynamic> toJson() => _$GroupPicToJson(this);
+
+  @override
+  List<Object?> get props => [name, url,id];
+
+  GroupPic copyWith({
+    String? id,
+    String? name,
+    String? url,
+  }) {
+    return GroupPic(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      url: url ?? this.url,
     );
   }
 }

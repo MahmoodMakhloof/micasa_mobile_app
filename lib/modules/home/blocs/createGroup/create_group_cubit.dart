@@ -12,11 +12,11 @@ class CreateGroupCubit extends Cubit<CreateGroupState> {
   final HomeRepository _homeRepository;
 
   void createNewGroup(
-      {required String name, required List<String> interfaces}) async {
+      {required String name, required String image}) async {
     emit(CreateGroupInProgress());
     try {
       final group = await _homeRepository.createNewGroup(
-          name: name, interfaces: interfaces);
+          name: name, image: image);
       emit(CreateGroupSucceeded(group: group));
     } catch (e) {
       emit(CreateGroupFailed(e));

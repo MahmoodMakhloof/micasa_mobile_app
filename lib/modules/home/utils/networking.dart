@@ -16,6 +16,7 @@ class HomeNetworking {
   static Uri get deleteGroup => _groupUri.addSegment("/delete");
   static Uri get addInterfacesToGroup => _groupUri.addSegment("/add");
   static Uri get removeInterfaceToGroup => _groupUri.addSegment("/remove");
+  static Uri get getGroupPics => _groupUri.addSegment("/pics");
 
   // interface primary uri
   static Uri get _interfaceUri => Network.siteUri.addSegment("/interface");

@@ -13,7 +13,6 @@ Scence _$ScenceFromJson(Map<String, dynamic> json) => $checkedCreate(
         final val = Scence(
           id: $checkedConvert('_id', (v) => v as String),
           name: $checkedConvert('name', (v) => v as String),
-          description: $checkedConvert('description', (v) => v as String),
           events: $checkedConvert(
               'events',
               (v) => (v as List<dynamic>)
@@ -28,7 +27,6 @@ Scence _$ScenceFromJson(Map<String, dynamic> json) => $checkedCreate(
 Map<String, dynamic> _$ScenceToJson(Scence instance) => <String, dynamic>{
       '_id': instance.id,
       'name': instance.name,
-      'description': instance.description,
       'events': instance.events.map((e) => e.toJson()).toList(),
     };
 

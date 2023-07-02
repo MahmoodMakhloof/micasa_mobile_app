@@ -25,14 +25,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.2.0"
-  animated_custom_dropdown:
-    dependency: "direct main"
-    description:
-      name: animated_custom_dropdown
-      sha256: "1b4394c31b98094bce2889aa7115beeba1462645056f0e1709a9c99c0c7fcd85"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.5.0"
   archive:
     dependency: transitive
     description:
@@ -60,10 +52,11 @@ packages:
   avatar_glow:
     dependency: "direct main"
     description:
-      name: avatar_glow
-      sha256: "3627f6f97d1f10d3c1996ae108d3488eabaf68c0cf0c3eac7e7c746a3812881d"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "74929f60b47e70750de99445997e41d0ef283f1b"
+      url: "git@github.com:MahmoodMakhloof/avatar_glow.git"
+    source: git
     version: "2.0.2"
   bloc:
     dependency: "direct main"
@@ -225,6 +218,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
+  cron_form_field:
+    dependency: "direct main"
+    description:
+      name: cron_form_field
+      sha256: a9447c95a1830c1e55729760971575f5588a55a2f4a45087ef8acf9c1523f89e
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0"
   cross_file:
     dependency: transitive
     description:
@@ -478,14 +479,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.0"
-  flutter_chat_bubble:
-    dependency: "direct main"
-    description:
-      name: flutter_chat_bubble
-      sha256: ede33df7237fea3d89464c8493bfa0bee2f94f50fd097ebd30c517c3c0d4fcf9
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.2"
   flutter_lints:
     dependency: "direct dev"
     description:

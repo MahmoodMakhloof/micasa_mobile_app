@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/modules/home/blocs/createGroup/create_group_cubit.dart';
+import 'package:shca/modules/home/blocs/fetchGroupPics/fetch_group_pics_cubit.dart';
 import 'package:shca/modules/home/blocs/fetchGroupsCubit/fetch_groups_cubit.dart';
-import 'package:shca/modules/home/views/add_devices.dart';
+import 'package:shca/modules/home/views/edit_room.dart';
 import 'package:shca/widgets/back_button.dart';
-import 'package:shca/widgets/custom_button.dart';
-import 'package:utilities/utilities.dart';
 
 import '../../../widgets/custom_text_field.dart';
-import '../../../widgets/error_viewer.dart';
 import '../../../widgets/no_data.dart';
-import '../blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
-import '../models/interface.dart';
+import '../models/group.dart';
 
 class AddRoomScreen extends StatelessWidget {
   const AddRoomScreen({super.key});
@@ -22,10 +20,6 @@ class AddRoomScreen extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => CreateGroupCubit(context.read()),
-        ),
-        BlocProvider(
-          create: (context) => FetchInterfacesCubit(context.read())
-            ..fetchInterfaces(scope: InterfacesScope.allBoards),
         ),
       ],
       child: const _AddRoomView(),
@@ -48,7 +42,11 @@ class _AddRoomViewState extends State<_AddRoomView> {
   }
 
   final TextEditingController _roomNameController = TextEditingController();
-  final List<Interface> _selectedInterfaces = [];
+  GroupPic? _selectedPic;
+
+  isEnabled() {
+    return _roomNameController.text.isNotEmpty && _selectedPic != null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,37 +67,33 @@ class _AddRoomViewState extends State<_AddRoomView> {
             },
           ),
           leading: const MyBackButton(),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-              child: SizedBox(
-                width: 70,
-                child: BlocConsumer<CreateGroupCubit, CreateGroupState>(
-                  listener: (context, state) {
-                    if (state is CreateGroupSucceeded) {
-                      context.read<FetchGroupsCubit>().fetchMyGroups();
-                      Navigator.pop(context);
-                    }
-                  },
-                  builder: (context, state) {
-                    return CustomButton(
-                        enabled: _roomNameController.text.isNotEmpty,
-                        isLoading: state is CreateGroupInProgress,
-                        onPressed: () {
-                          if (_roomNameController.text.isNotEmpty) {
-                            context.read<CreateGroupCubit>().createNewGroup(
-                                name: _roomNameController.text,
-                                interfaces: _selectedInterfaces
-                                    .map((e) => e.id)
-                                    .toList());
-                          }
-                        },
-                        child: const Text("Save"));
-                  },
-                ),
-              ),
-            )
-          ],
+        ),
+        floatingActionButton: BlocConsumer<CreateGroupCubit, CreateGroupState>(
+          listener: (context, state) {
+            if (state is CreateGroupSucceeded) {
+              context.read<FetchGroupsCubit>().fetchMyGroups();
+              Navigator.pop(context);
+            }
+          },
+          builder: (context, state) {
+            return FloatingActionButton.extended(
+                backgroundColor: isEnabled() ? CColors.primary : Colors.grey,
+                onPressed: isEnabled()
+                    ? () {
+                        context.read<CreateGroupCubit>().createNewGroup(
+                            name: _roomNameController.text,
+                            image: _selectedPic!.id);
+                      }
+                    : null,
+                label: state is CreateGroupInProgress
+                    ? const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Text("Save Changes"));
+          },
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -107,56 +101,40 @@ class _AddRoomViewState extends State<_AddRoomView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BlocBuilder<FetchInterfacesCubit, FetchInterfacesState>(
-                  builder: (context, state) {
-                    if (state is FetchInterfacesFailed) {
-                      return ErrorViewer(state.e!);
-                    } else if (state is FetchInterfacesSucceeded) {
-                      final interfaces = state.allBoardsInterfaces;
-
-                      if (interfaces.isEmpty) {
-                        return const NoDataView();
-                      }
-                      return Column(
-                        children: [
-                          GridView.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      crossAxisSpacing: 5,
-                                      childAspectRatio: 100 / 60,
-                                      mainAxisSpacing: 5),
-                              itemCount: interfaces.length,
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemBuilder: ((context, index) =>
-                                  DeviceSelectItem(
-                                      selected: _selectedInterfaces
-                                          .contains(interfaces[index]),
-                                      interface: interfaces[index],
-                                      onChanged: (selected) {
-                                        if (selected ?? false) {
-                                          setState(() {
-                                            _selectedInterfaces
-                                                .add(interfaces[index]);
-                                          });
-                                        } else {
-                                          setState(() {
-                                            _selectedInterfaces
-                                                .remove(interfaces[index]);
-                                          });
-                                        }
-                                      },
-                                      color: getRandomColor(
-                                              seed: (interfaces[index])
-                                                  .toString())
-                                          .color))),
-                        ],
-                      );
+                BlocBuilder<FetchGroupPicsCubit, FetchGroupPicsState>(
+                    builder: ((context, state) {
+                  if (state is FetchGroupPicsFailed) {
+                    return ErrorWidget(state.e!);
+                  }
+                  if (state is FetchGroupPicsSucceeded) {
+                    final images = state.pics;
+                    if (images.isEmpty) {
+                      return const NoDataView();
+                    } else {
+                      return GridView.builder(
+                          itemCount: images.length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 10,
+                                  childAspectRatio: 1,
+                                  mainAxisSpacing: 10),
+                          padding: const EdgeInsets.all(10),
+                          itemBuilder: ((context, index) => PicSelectWidget(
+                                image: images[index],
+                                isSelected: _selectedPic == images[index],
+                                onTap: () {
+                                  setState(() {
+                                    _selectedPic = images[index];
+                                  });
+                                },
+                              )));
                     }
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                ),
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                }))
               ],
             ),
           ),

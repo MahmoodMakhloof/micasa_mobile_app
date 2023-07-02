@@ -7,7 +7,7 @@ class CColors {
 
   static Color get primary => Colors.indigo;
 
-  static var background = Colors.grey.shade100;
+  static var background = const Color(0xffF5F5F5);
 
   static const yellow = Color(0xffF8CC1C);
   static const darkOrang = Color(0xffFE8838);
@@ -34,8 +34,8 @@ class CColors {
   static const gr1 = Color(0xff479cf6);
   static const gr2 = Color(0xff9ffd8d);
 
-  static Gradient get blueLinearGradient => const LinearGradient(
-        colors: [gr1, gr2],
+  static Gradient get scenceGraient => LinearGradient(
+        colors: [Colors.indigo.shade300, Colors.greenAccent.shade100],
         begin: AlignmentDirectional.centerStart,
         end: AlignmentDirectional.centerEnd,
       );

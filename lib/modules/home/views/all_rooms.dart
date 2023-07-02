@@ -8,6 +8,7 @@ import 'package:shca/modules/home/models/group.dart';
 import 'package:shca/modules/home/views/add_room.dart';
 import 'package:shca/modules/home/views/home.dart';
 import 'package:shca/modules/home/views/single_room.dart';
+import 'package:shca/modules/home/widgets/room_item.dart';
 import 'package:shca/widgets/back_button.dart';
 import 'package:shca/widgets/widgets.dart';
 import 'package:utilities/utilities.dart';
@@ -41,19 +42,11 @@ class _AllRoomsViewState extends State<_AllRoomsView> {
     return Scaffold(
       appBar: AppBar(
         leading: const MyBackButton(),
-        title: const Text("All Rooms"),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-            child: SizedBox(
-                width: 100,
-                child: CustomButton(
-                    onPressed: () => context.navigateTo(const AddRoomScreen()),
-                    child: const Text("Create New"))),
-          ),
-          // IconButton(onPressed: () {}, icon: Icon(CupertinoIcons.add))
-        ],
+        title: const Text("Rooms"),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => context.navigateTo(const AddRoomScreen()),
+          label: const Text("Add Room")),
       body: BlocBuilder<FetchGroupsCubit, FetchGroupsState>(
         builder: (context, state) {
           if (state is FetchGroupsFailed) {
@@ -64,26 +57,31 @@ class _AllRoomsViewState extends State<_AllRoomsView> {
               return const NoDataView();
             }
             return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: StaggeredGrid.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 5,
-                  crossAxisSpacing: 5,
-                  children: List.generate(
-                      groups.length,
-                      (index) => RoomItem(
-                          onTap: () => context.navigateTo(
-                                SingleRoomScreen(
-                                  group: groups[index],
-                                  groups: groups,
-                                ),
-                              ),
-                          group: groups[index],
-                          color: getRandomColor(
-                                  seed: (groups[index].id).toString())
-                              .color)),
-                ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: StaggeredGrid.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 5,
+                      crossAxisSpacing: 5,
+                      children: List.generate(
+                          groups.length,
+                          (index) => RoomItem(
+                              onTap: () => context.navigateTo(
+                                    SingleRoomScreen(
+                                      group: groups[index],
+                                    ),
+                                  ),
+                              group: groups[index],
+                              color: getRandomColor(
+                                      seed: (groups[index].id).toString())
+                                  .color)),
+                    ),
+                  ),
+                  const Space.v40(),
+                  const Space.v40(),
+                ],
               ),
             );
           }

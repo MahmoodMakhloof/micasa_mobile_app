@@ -32,7 +32,6 @@ class EventsRepository {
 
   Future<Scence> createNewScence(
       {required String name,
-      required String? description,
       required List<Event> events}) async {
     try {
       final uri = EventsNetworking.createScence;
@@ -41,7 +40,6 @@ class EventsRepository {
         uri,
         data: {
           "name": name,
-          "description": description,
           "events": (events.map((e) => e.toJson()).toList())
         },
         options: commonOptionsWithCustom(customOptions: customOptions),
@@ -55,9 +53,47 @@ class EventsRepository {
     }
   }
 
+   Future<Scence> updateScence({required Scence newScence}) async {
+    try {
+      final uri = EventsNetworking.updateScence;
+      final customOptions = await getCustomOptions();
+      final response = await _client.patchUri(
+        uri,
+        data: {
+          "scenceId": newScence.id,
+          "name": newScence.name,
+          "events": (newScence.events.map((e) => e.toJson()).toList())
+        },
+        options: commonOptionsWithCustom(customOptions: customOptions),
+      );
+      final data = response.data['scence'];
+      final scence = Scence.fromJson(data);
+      return scence;
+    } on DioError catch (e) {
+      final error = decodeDioError(e);
+      throw error;
+    }
+  }
+
+  Future<void> deleteScence({required Scence scence}) async {
+    try {
+      final uri = EventsNetworking.deleteScence;
+      final customOptions = await getCustomOptions();
+      await _client.deleteUri(
+        uri,
+        data: {
+          "scenceId": scence.id,
+        },
+        options: commonOptionsWithCustom(customOptions: customOptions),
+      );
+    } on DioError catch (e) {
+      final error = decodeDioError(e);
+      throw error;
+    }
+  }
+
   Future<Schedule> createNewSchedule(
       {required String name,
-      required String description,
       required String? datetime,
       required String? cron,
       required List<Event> events}) async {
@@ -68,7 +104,6 @@ class EventsRepository {
         uri,
         data: {
           "name": name,
-          "description": description,
           "cron": cron,
           "datetime": datetime,
           "events": (events.map((e) => e.toJson()).toList())
@@ -78,6 +113,48 @@ class EventsRepository {
       final data = response.data['schedule'];
       final schedule = Schedule.fromJson(data);
       return schedule;
+    } on DioError catch (e) {
+      final error = decodeDioError(e);
+      throw error;
+    }
+  }
+
+  Future<Schedule> updateSchedule({required Schedule newSchedule}) async {
+    try {
+      final uri = EventsNetworking.updateSchedule;
+      final customOptions = await getCustomOptions();
+      final response = await _client.patchUri(
+        uri,
+        data: {
+          "scheduleId": newSchedule.id,
+          "enabled": newSchedule.enabled,
+          "name": newSchedule.name,
+          "cron": newSchedule.cron,
+          "datetime": newSchedule.datetime,
+          "events": (newSchedule.events.map((e) => e.toJson()).toList())
+        },
+        options: commonOptionsWithCustom(customOptions: customOptions),
+      );
+      final data = response.data['schedule'];
+      final schedule = Schedule.fromJson(data);
+      return schedule;
+    } on DioError catch (e) {
+      final error = decodeDioError(e);
+      throw error;
+    }
+  }
+
+  Future<void> deleteSchedule({required Schedule schedule}) async {
+    try {
+      final uri = EventsNetworking.deleteSchedule;
+      final customOptions = await getCustomOptions();
+      await _client.deleteUri(
+        uri,
+        data: {
+          "scheduleId": schedule.id,
+        },
+        options: commonOptionsWithCustom(customOptions: customOptions),
+      );
     } on DioError catch (e) {
       final error = decodeDioError(e);
       throw error;

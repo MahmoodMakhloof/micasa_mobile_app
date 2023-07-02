@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shca/core/helpers/style_config.dart';
 import 'package:utilities/utilities.dart';
 
-
 const double kCustomOutlinedButtonHeight = 46;
 
 class _CustomOutlinedButtonHeroTag {
@@ -149,7 +148,7 @@ class _CustomOutlinedButtonState extends State<CustomOutlinedButton> {
       size: const Size.square(20),
       child: CircularProgressIndicator(
         strokeWidth: 2,
-        color: CColors.primary,
+        color: widget.borderColor,
       ),
     );
   }

@@ -17,10 +17,10 @@ class SocketIOHelper {
       });
       socket.onDisconnect((_) => log('Connection Disconnection'));
       socket.onConnectError((err) {
-        log(err);
+        log(err.toString());
         // init();
       });
-      socket.onError((err) => log(err));
+      socket.onError((err) => log(err.toString()));
     } catch (e) {
       log(e.toString());
     }

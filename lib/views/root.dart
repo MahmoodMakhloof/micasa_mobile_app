@@ -27,11 +27,7 @@ class Root extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          FetchEventIntefacesCubit(context.read())..fetchEventInterfaces(),
-      child: const _RootView(),
-    );
+    return  const _RootView();
   }
 }
 
@@ -121,10 +117,15 @@ class _RootViewState extends State<_RootView> {
           builder: (context, state) {
             if (state is FetchEventIntefacesSucceeded) {
               return AvatarGlow(
+                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.rectangle,
                 animate: isListening,
+                // duration: Duration.zero,
                 endRadius: 45,
                 glowColor: CColors.primary,
                 child: FloatingActionButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
                   onPressed: () => toggleRecording(state.interfaces),
                   child: Icon(
                     isListening ? CupertinoIcons.ellipsis : CupertinoIcons.mic,
@@ -132,7 +133,14 @@ class _RootViewState extends State<_RootView> {
                 ),
               );
             }
-            return const SizedBox.shrink();
+            return FloatingActionButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              onPressed: () {},
+              child: const Icon(
+                CupertinoIcons.mic,
+              ),
+            );
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

@@ -1,16 +1,22 @@
-import 'package:animated_custom_dropdown/custom_dropdown.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:utilities/utilities.dart';
+
+import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
+import 'package:shca/modules/home/blocs/fetchGroupsCubit/fetch_groups_cubit.dart';
 import 'package:shca/modules/home/blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
 import 'package:shca/modules/home/models/group.dart';
 import 'package:shca/modules/home/views/add_devices.dart';
+import 'package:shca/modules/home/views/edit_room.dart';
 import 'package:shca/modules/home/widgets/device_item.dart';
 import 'package:shca/widgets/back_button.dart';
-import 'package:shca/widgets/custom_button.dart';
-import 'package:utilities/utilities.dart';
+import 'package:shca/widgets/cutstom_outlined_button.dart';
+
 import '../../../widgets/error_viewer.dart';
 import '../../../widgets/no_data.dart';
 
@@ -22,45 +28,27 @@ List<String> avatars = [
 
 class SingleRoomScreen extends StatefulWidget {
   final Group group;
-  final List<Group> groups;
-  const SingleRoomScreen(
-      {super.key, required this.group, required this.groups});
+  const SingleRoomScreen({
+    super.key,
+    required this.group,
+  });
 
   @override
   State<SingleRoomScreen> createState() => _SingleRoomScreenState();
 }
 
 class _SingleRoomScreenState extends State<SingleRoomScreen> {
+  late TextEditingController _controller;
+  late Group _myGroup;
+
   @override
   void initState() {
     super.initState();
+    _controller = TextEditingController(text: widget.group.name);
     context.read<FetchInterfacesCubit>().fetchInterfaces(
         scope: InterfacesScope.inGroup, groupId: widget.group.id);
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    return _SingleRoomView(group: widget.group, groups: widget.groups);
-  }
-}
-
-class _SingleRoomView extends StatefulWidget {
-  final Group group;
-  final List<Group> groups;
-  const _SingleRoomView({required this.group, required this.groups});
-
-  @override
-  State<_SingleRoomView> createState() => __SingleRoomViewState();
-}
-
-class __SingleRoomViewState extends State<_SingleRoomView> {
-  late TextEditingController _controller;
-
-  @override
-  void initState() {
-    _controller = TextEditingController(text: widget.group.name);
-
-    super.initState();
+    _myGroup = widget.group;
   }
 
   @override
@@ -71,155 +59,265 @@ class __SingleRoomViewState extends State<_SingleRoomView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: const MyBackButton(),
-        title: CustomDropdown.search(
-          hintText: 'Select Room',
-          items: widget.groups.map((e) => e.name).toList(),
-          controller: _controller,
-          onChanged: (groupName) => context
-              .read<FetchInterfacesCubit>()
-              .fetchInterfaces(
-                  scope: InterfacesScope.inGroup,
-                  groupId: widget.groups
-                      .firstWhere((element) => element.name == groupName)
-                      .id),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-            child: SizedBox(
-                width: 100,
-                child: CustomButton(
-                    onPressed: () async {
-                      final reLoadPage = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AddDevicesScreen(
-                                group: widget.groups.firstWhere((element) =>
-                                    element.name == _controller.text))),
-                      );
-
-                      if (reLoadPage) {
-                        context.read<FetchInterfacesCubit>().fetchInterfaces(
-                            scope: InterfacesScope.inGroup,
-                            groupId: widget.group.id);
-                      }
-                    },
-                    child: const Text("Add Devices"))),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10)),
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Row(
-                    children: [
-                      Stack(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.white,
-                            radius: 22,
-                            child: CircleAvatar(
-                              radius: 20,
-                              backgroundImage: NetworkImage(avatars[0]),
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsetsDirectional.only(start: 30),
-                            child: CircleAvatar(
-                              backgroundColor: Colors.white,
-                              radius: 22,
-                              child: CircleAvatar(
-                                radius: 20,
-                                backgroundImage: NetworkImage(avatars[1]),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsetsDirectional.only(start: 60),
-                            child: CircleAvatar(
-                              backgroundColor: Colors.white,
-                              radius: 22,
-                              child: CircleAvatar(
-                                radius: 20,
-                                backgroundImage: NetworkImage(avatars[2]),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsetsDirectional.only(start: 90),
-                            child: CircleAvatar(
-                              backgroundColor: Colors.white,
-                              radius: 22,
-                              child: CircleAvatar(
-                                radius: 20,
-                                backgroundColor: Colors.grey.shade200,
-                                child: const Icon(CupertinoIcons.ellipsis),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Space.h15(),
-                      Expanded(
-                          child: Text(
-                        "Mona, Mahmoud and 3 others connected this room.",
-                        style: Style.appTheme.textTheme.titleMedium!
-                            .copyWith(height: 1.2),
-                      )),
-                      const Space.h15(),
-                      const Icon(CupertinoIcons.forward)
-                    ],
+    return BlocBuilder<FetchGroupsCubit, FetchGroupsState>(
+      builder: (context, state) {
+        if (state is FetchGroupsFailed) {
+          return ErrorViewer(state.e!);
+        }
+        if (state is FetchGroupsSucceeded) {
+          final groups = state.groups;
+          if (groups.isEmpty) {
+            return const NoDataView();
+          }
+          _myGroup = groups.singleWhere((element) => element.id == _myGroup.id);
+          return Scaffold(
+            appBar: AppBar(
+              leading: const MyBackButton(),
+              title: DropdownSearch<Group>(
+                dropdownBuilder: (context, selectedItem) {
+                  if (selectedItem == null) {
+                    return Text(
+                      "Select Group",
+                      style: Style.appTheme.textTheme.titleMedium!
+                          .copyWith(color: Colors.grey.shade400, height: 2.3),
+                    );
+                  }
+                  return SelectionRoomItem(
+                    group: selectedItem,
+                  );
+                },
+                filterFn: (item, filter) {
+                  return item.name.toLowerCase().contains(filter.toLowerCase());
+                },
+                dropdownButtonProps: const DropdownButtonProps(
+                  icon: Icon(
+                    CupertinoIcons.chevron_down,
+                    size: 15,
                   ),
                 ),
-              ),
-              const Space.v10(),
-              BlocBuilder<FetchInterfacesCubit, FetchInterfacesState>(
-                builder: (context, state) {
-                  if (state is FetchInterfacesFailed) {
-                    return ErrorViewer(state.e!);
-                  } else if (state is FetchInterfacesSucceeded) {
-                    final interfaces = state.inGroupInterfaces;
-                    if (interfaces.isEmpty) {
-                      return const NoDataView();
-                    }
-                    return StaggeredGrid.count(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        children: List.generate(
-                            interfaces.length,
-                            (index) => DeviceItem(
-                              scope: InterfacesScope.inGroup,
-                                onTap: (data) => context
-                                    .read<FetchInterfacesCubit>()
-                                    .updateInterfaceValue(data),
-                                interface: interfaces[index],
-                                color: getRandomColor(
-                                        seed: (index + 80967).toString())
-                                    .color)));
+                popupProps: PopupProps.bottomSheet(
+                  fit: FlexFit.loose,
+                  bottomSheetProps: BottomSheetProps(
+                      clipBehavior: Clip.antiAlias,
+                      backgroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10))),
+                  listViewProps: const ListViewProps(
+                      padding:
+                          EdgeInsets.only(bottom: 40, left: 25, right: 25)),
+                  itemBuilder: (context, item, isSelected) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: SelectionRoomItem(
+                        group: item,
+                      ),
+                    );
+                  },
+                  showSelectedItems: false,
+                  showSearchBox: true,
+                  scrollbarProps: const ScrollbarProps(thickness: 5),
+                  searchDelay: Duration.zero,
+                  searchFieldProps: const TextFieldProps(
+                      decoration: InputDecoration(
+                    hintText: "Ex: Bed Room",
+                    // border: InputBorder.none,
+                  )),
+                ),
+                items: groups,
+                dropdownDecoratorProps: DropDownDecoratorProps(
+                  dropdownSearchDecoration: InputDecoration(
+                      filled: false,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 2),
+                      fillColor: Colors.grey.shade200,
+                      border: InputBorder.none),
+                ),
+                onChanged: (group) {
+                  if (group != null) {
+                    context.read<FetchInterfacesCubit>().fetchInterfaces(
+                        scope: InterfacesScope.inGroup, groupId: group.id);
                   }
-                  return const Center(child: CircularProgressIndicator());
                 },
+                selectedItem: _myGroup,
               ),
-              const Space.v30()
-            ],
-          ),
+              actions: [
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 22),
+                    child: SizedBox(
+                        width: 60,
+                        child: CustomOutlinedButton(
+                          onPressed: () => context.navigateTo(UpdateRoomScreen(
+                            group: _myGroup,
+                          )),
+                          child: const Text(
+                            "Edit",
+                          ),
+                        ))),
+              ],
+            ),
+            floatingActionButton: FloatingActionButton.extended(
+                onPressed: () =>
+                    context.navigateTo(AddDevicesScreen(group: _myGroup)),
+                label: const Text("Add Devices")),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Row(
+                          children: [
+                            Stack(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  radius: 22,
+                                  child: CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage:
+                                        CachedNetworkImageProvider(avatars[0]),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsetsDirectional.only(
+                                      start: 30),
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    radius: 22,
+                                    child: CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage:
+                                          CachedNetworkImageProvider(
+                                              avatars[1]),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsetsDirectional.only(
+                                      start: 60),
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    radius: 22,
+                                    child: CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage:
+                                          CachedNetworkImageProvider(
+                                              avatars[2]),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsetsDirectional.only(
+                                      start: 90),
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    radius: 22,
+                                    child: CircleAvatar(
+                                      radius: 20,
+                                      backgroundColor: Colors.grey.shade200,
+                                      child:
+                                          const Icon(CupertinoIcons.ellipsis),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Space.h15(),
+                            Expanded(
+                                child: Text(
+                              "Mona, Mahmoud and 3 others connected this room.",
+                              style: Style.appTheme.textTheme.titleMedium!
+                                  .copyWith(height: 1.2),
+                            )),
+                            const Space.h15(),
+                            const Icon(CupertinoIcons.forward)
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Space.v10(),
+                    BlocBuilder<FetchInterfacesCubit, FetchInterfacesState>(
+                      builder: (context, state) {
+                        if (state is FetchInterfacesFailed) {
+                          return ErrorViewer(state.e!);
+                        } else if (state is FetchInterfacesSucceeded) {
+                          final interfaces = state.inGroupInterfaces;
+                          if (interfaces.isEmpty) {
+                            return const NoDataView();
+                          }
+                          return StaggeredGrid.count(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                              children: List.generate(
+                                  interfaces.length,
+                                  (index) => DeviceItem(
+                                      scope: InterfacesScope.inGroup,
+                                      onTap: (data) => context
+                                          .read<FetchInterfacesCubit>()
+                                          .updateInterfaceValue(data),
+                                      interface: interfaces[index],
+                                      color: getRandomColor(
+                                              seed: (index + 80967).toString())
+                                          .color)));
+                        }
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                    ),
+                    const Space.v30()
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      },
+    );
+  }
+}
+
+class SelectionRoomItem extends StatelessWidget {
+  final Group group;
+  const SelectionRoomItem({
+    Key? key,
+    required this.group,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SizedBox(
+            height: 30,
+            width: 30,
+            child: CachedNetworkImage(imageUrl: group.image.url)),
+        const Space.h20(),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              group.name,
+              style:
+                  Style.appTheme.textTheme.titleMedium!.copyWith(height: 1.5),
+            ),
+            Text(
+              "${group.interfaces.length}  Devices",
+              style: Style.appTheme.textTheme.bodySmall!.copyWith(height: 1.5),
+            ),
+          ],
         ),
-      ),
+      ],
     );
   }
 }

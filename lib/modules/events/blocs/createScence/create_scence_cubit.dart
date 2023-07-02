@@ -13,12 +13,11 @@ class CreateScenceCubit extends Cubit<CreateScenceState> {
 
   void createNewScence(
       {required String name,
-      required String? description,
       required List<Event> events}) async {
     emit(CreateScenceInProgress());
     try {
       final scence = await _scenceRepository.createNewScence(
-          name: name, description: description, events: events);
+          name: name,  events: events);
       emit(CreateScenceSucceeded(scence: scence));
     } catch (e) {
       emit(CreateScenceFailed(e));

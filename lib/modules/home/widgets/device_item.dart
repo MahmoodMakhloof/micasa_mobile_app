@@ -236,6 +236,7 @@ class DeviceItem extends StatelessWidget {
                 SliderTheme(
                   data: SliderThemeData(
                       trackHeight: 40,
+                      trackShape: const RectangularSliderTrackShape(),
                       activeTrackColor: Colors.orange,
                       thumbShape: SliderComponentShape.noOverlay,
                       overlayShape: SliderComponentShape.noOverlay,
@@ -245,7 +246,7 @@ class DeviceItem extends StatelessWidget {
                     child: Stack(
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(15),
                           child: Slider(
                               value: interface.value ?? 0,
                               divisions: 5,

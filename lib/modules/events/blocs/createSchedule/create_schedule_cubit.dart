@@ -15,7 +15,6 @@ class CreateScheduleCubit extends Cubit<CreateScheduleState> {
 
   void createNewSchedule(
       {required String name,
-      required String description,
       required String? cron,
       required String? datetime,
       required List<Event> events}) async {
@@ -23,7 +22,6 @@ class CreateScheduleCubit extends Cubit<CreateScheduleState> {
     try {
       final schedule = await _scheduleRepository.createNewSchedule(
           name: name,
-          description: description,
           cron: cron,
           datetime: datetime,
           events: events);

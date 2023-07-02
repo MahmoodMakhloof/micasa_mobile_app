@@ -1,23 +1,35 @@
-import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
+import 'package:cron_form_field/cron_expression.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:shca/modules/events/views/handle_schedule.dart';
+import 'package:utilities/utilities.dart';
+
 import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/modules/events/blocs/fetchSchedules/fetch_schedules_cubit.dart';
+import 'package:shca/modules/events/blocs/updateSchedule/update_schedule_cubit.dart';
 import 'package:shca/modules/events/models/schedule.dart';
-import 'package:shca/modules/events/views/create_schedule.dart';
 import 'package:shca/widgets/custom_button.dart';
 import 'package:shca/widgets/error_viewer.dart';
 import 'package:shca/widgets/no_data.dart';
-import 'package:utilities/utilities.dart';
 
 import '../../../generated/assets.gen.dart';
 
 class SchedulesView extends StatelessWidget {
   const SchedulesView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => UpdateScheduleCubit(context.read()),
+      child: const _ScheduleView(),
+    );
+  }
+}
+
+class _ScheduleView extends StatelessWidget {
+  const _ScheduleView();
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +62,7 @@ class SchedulesView extends StatelessWidget {
                       backgroundColor: Colors.indigoAccent,
                       child: const Text("Create New Schedule"),
                       onPressed: () =>
-                          context.navigateTo(const CreateScheuleScreen()),
+                          context.navigateTo(const HandleScheduleScreen()),
                     ),
                   ),
                 ),
@@ -66,60 +78,139 @@ class SchedulesView extends StatelessWidget {
                 if (schedules.isEmpty) {
                   return const NoDataView();
                 }
-                return ListView.separated(
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: schedules.length,
-                  padding: const EdgeInsets.all(10),
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) => ScheduleItem(
-                    schedule: schedules[index],
+                return Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: StaggeredGrid.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    children: List.generate(
+                      schedules.length,
+                      (index) => ScheduleItem(
+                        onTap: () => context.navigateTo(HandleScheduleScreen(
+                          schedule: schedules[index],
+                        )),
+                        schedule: schedules[index],
+                        onEnabledChange: (isEnabled) => context
+                            .read<UpdateScheduleCubit>()
+                            .updateSchedule(
+                                newSchedule: schedules[index]
+                                    .copyWith(enabled: isEnabled)),
+                      ),
+                    ),
                   ),
-                  separatorBuilder: ((context, index) => const Space.v10()),
                 );
               }
               return const Center(child: CircularProgressIndicator());
             },
           ),
+          const Space.v40()
         ],
       ),
     );
   }
 }
 
-class ScheduleItem extends StatelessWidget {
+class ScheduleItem extends StatefulWidget {
   const ScheduleItem({
     Key? key,
     required this.schedule,
+    required this.onEnabledChange,
+    required this.onTap,
   }) : super(key: key);
 
   final Schedule schedule;
+  final Function(bool enabled) onEnabledChange;
+  final VoidCallback onTap;
+
   @override
-  Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            color: schedule.enabled
-                ? CColors.primary.withOpacity(0.1)
-                : Colors.white,
-            borderRadius: BorderRadius.circular(10)),
-        child: ListTile(
-          leading: const Icon(FontAwesomeIcons.clock),
-          title: Text(schedule.name),
-          subtitle: schedule.cron != null
-              ? Text(cronToTime(schedule.cron!))
-              : Text(schedule.datetime!),
-          trailing: Switch(value: schedule.enabled, onChanged: (value) {
-          }),
-        ));
+  State<ScheduleItem> createState() => _ScheduleItemState();
+}
+
+class _ScheduleItemState extends State<ScheduleItem> {
+  late bool isEnabled;
+
+  @override
+  void initState() {
+    super.initState();
+    isEnabled = widget.schedule.enabled;
   }
 
-  String cronToTime(String cron) {
-    final elements = cron.split(" ");
-    final m = elements[0];
-    final h = elements[1];
-    var trueH = (int.parse(h) < 12 ? h : int.parse(h) - 12).toString();
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: widget.onTap,
+      child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(15)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                      ).copyWith(top: 10),
+                      child: Text(
+                        widget.schedule.name,
+                        style: Style.appTheme.textTheme.titleMedium,
+                      ),
+                    ),
+                  ),
+                  Container(
+                      decoration: BoxDecoration(
+                          color: CColors.background,
+                          borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(15))),
+                      child: SizedBox(
+                        width: 60,
+                        height: 30,
+                        child: Switch(
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            value: isEnabled,
+                            onChanged: (value) {
+                              setState(() {
+                                isEnabled = value;
+                                widget.onEnabledChange(value);
+                              });
+                            }),
+                      )),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15)
+                    .copyWith(bottom: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.schedule.cron != null
+                          ? cronToReadable(widget.schedule.cron!)
+                          : datetimeToFormatted(widget.schedule.datetime!),
+                      style: Style.appTheme.textTheme.bodySmall,
+                    ),
+                    Text(
+                      isEnabled ? "Enabled" : "Not Enabled",
+                      style: Style.appTheme.textTheme.bodySmall!.copyWith(
+                          color: isEnabled ? CColors.primary : Colors.orange),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )),
+    );
+  }
 
-    var postfix = h == trueH ? "AM" : "PM";
+  String cronToReadable(String cron) {
+    return CronExpression.fromString(cron).toReadableString();
+  }
 
-    return "$trueH:$m $postfix";
+  String datetimeToFormatted(String datetime) {
+    return DateTime.parse(datetime).toLocalizedDateTimeStr();
   }
 }

@@ -35,7 +35,6 @@ class _AddDevicesScreenState extends State<AddDevicesScreen> {
         providers: [
           BlocProvider(
               create: (context) => AddInterfacesToGroupCubit(context.read())),
-          
         ],
         child: _AddDevicesView(
           group: widget.group,
@@ -93,7 +92,12 @@ class _AddDevicesViewState extends State<_AddDevicesView> {
                     AddInterfacesToGroupState>(
                   listener: (context, state) {
                     if (state is AddInterfacesToGroupSucceeded) {
-                      Navigator.pop(context, true);
+                      context.read<FetchInterfacesCubit>().fetchInterfaces(
+                          scope: InterfacesScope.inGroup,
+                          groupId: widget.group.id);
+                      Navigator.pop(
+                        context,
+                      );
                     }
                   },
                   builder: (context, state) {

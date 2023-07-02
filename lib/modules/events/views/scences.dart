@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/core/helpers/style_config.dart';
 import 'package:shca/generated/assets.gen.dart';
 import 'package:shca/modules/events/blocs/fetchScences/fetch_scences_cubit.dart';
+import 'package:shca/modules/events/views/handle_Schedule.dart';
+import 'package:shca/modules/events/widgets/scence_item.dart';
 import 'package:shca/modules/home/views/home.dart';
-import 'package:shca/modules/events/views/create_scence.dart';
+import 'package:shca/modules/events/views/handle_scence.dart';
 import 'package:shca/widgets/custom_button.dart';
 import 'package:utilities/utilities.dart';
 
@@ -46,7 +49,7 @@ class ScencesView extends StatelessWidget {
                       backgroundColor: Colors.indigoAccent,
                       child: const Text("Create New Scene"),
                       onPressed: () =>
-                          context.navigateTo(const CreateScenceScreen()),
+                          context.navigateTo(const HandlScenceScreen()),
                     ),
                   ),
                 ),
@@ -64,22 +67,28 @@ class ScencesView extends StatelessWidget {
                 if (scences.isEmpty) {
                   return const NoDataView();
                 }
-                return ListView.separated(
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: scences.length,
-                  padding: const EdgeInsets.all(10),
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) => ScenceItem(
-                    scence: scences[index],
+                return Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: StaggeredGrid.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    children: List.generate(
+                      scences.length,
+                      (index) => ScenceItem(
+                          scence: scences[index],
+                          onTap: () => context.navigateTo(HandlScenceScreen(
+                                scence: scences[index],
+                              ))),
+                    ),
                   ),
-                  separatorBuilder: ((context, index) => const Space.v10()),
                 );
               }
 
               return const Center(child: CircularProgressIndicator());
             },
           ),
-          Space.v30(),
+          const Space.v30(),
         ],
       ),
     );

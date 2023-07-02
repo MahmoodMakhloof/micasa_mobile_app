@@ -6,10 +6,10 @@ import 'package:shca/core/helpers/navigation.dart';
 import 'package:shca/modules/events/models/scence.dart';
 import 'package:shca/modules/home/blocs/fetchGroupsCubit/fetch_groups_cubit.dart';
 import 'package:shca/modules/home/blocs/fetchInterfaces/fetch_interfaces_cubit.dart';
+import 'package:shca/modules/home/views/add_room.dart';
 import 'package:shca/modules/home/views/all_devices.dart';
 import 'package:shca/modules/home/views/all_rooms.dart';
 import 'package:shca/modules/home/views/single_room.dart';
-import 'package:shca/modules/events/blocs/fetchScences/fetch_scences_cubit.dart';
 import 'package:shca/modules/home/widgets/device_item.dart';
 import 'package:shca/widgets/widgets.dart';
 import 'package:slider_button/slider_button.dart';
@@ -17,6 +17,7 @@ import 'package:utilities/utilities.dart';
 
 import '../../../core/helpers/style_config.dart';
 import '../models/group.dart';
+import '../widgets/room_item.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -37,32 +38,8 @@ class _HomeView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           children: [
-            const Space.v10(),
-            BlocBuilder<FetchScencesCubit, FetchScencesState>(
-              builder: (context, state) {
-                if (state is FetchScencesFailed) {
-                  return ErrorViewer(state.e!);
-                }
+            // const Space.v10(),
 
-                if (state is FetchScencesSucceeded) {
-                  final scences = state.scences;
-                  if (scences.isEmpty) {
-                    return const NoDataView();
-                  }
-                  return ListView.separated(
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 1,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) => ScenceItem(
-                      scence: scences[index],
-                    ),
-                    separatorBuilder: ((context, index) => const Space.v10()),
-                  );
-                }
-
-                return const Center(child: CircularProgressIndicator());
-              },
-            ),
             BlocBuilder<FetchGroupsCubit, FetchGroupsState>(
               builder: (context, state) {
                 if (state is FetchGroupsFailed) {
@@ -71,6 +48,11 @@ class _HomeView extends StatelessWidget {
                   final groups = state.groups;
                   if (groups.isEmpty) {
                     return const NoDataView();
+                  }
+
+                  var myCossAxisCount = 3;
+                  if (groups.length < 3) {
+                    myCossAxisCount = groups.length;
                   }
                   return Column(
                     children: [
@@ -90,16 +72,15 @@ class _HomeView extends StatelessWidget {
                         ],
                       ),
                       StaggeredGrid.count(
-                        crossAxisCount: 2,
+                        crossAxisCount: myCossAxisCount,
                         crossAxisSpacing: 5,
                         mainAxisSpacing: 5,
                         children: List.generate(
-                            groups.length > 2 ? 2 : groups.length,
+                            myCossAxisCount,
                             (index) => RoomItem(
                                 onTap: () => context.navigateTo(
                                       SingleRoomScreen(
                                         group: groups[index],
-                                        groups: groups,
                                       ),
                                     ),
                                 group: groups[index],
@@ -159,135 +140,9 @@ class _HomeView extends StatelessWidget {
                 return const Center(child: CircularProgressIndicator());
               },
             ),
-            const Space.v40()
+            const Space.v40(),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class ScenceItem extends StatelessWidget {
-  final Scence scence;
-  const ScenceItem({super.key, required this.scence});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          // gradient: CColors.blueLinearGradient,
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  CupertinoIcons.moon_stars,
-                  color: Colors.orange,
-                  size: 40,
-                ),
-                const Space.h15(),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        scence.name,
-                        style: Style.appTheme.textTheme.bodyLarge!.copyWith(
-                            color: Colors.black, height: 1.5, fontSize: 20),
-                      ),
-                      Text(
-                        scence.description,
-                        style: Style.appTheme.textTheme.bodySmall!.copyWith(
-                            color: Colors.black, height: 1.5, fontSize: 13),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-            const Space.v15(),
-            SliderButton(
-                width: double.infinity,
-                action: () {
-                  ///Do something here
-                },
-                alignLabel: Alignment.center,
-                label: Text(
-                  "Slide to run scence",
-                  style: TextStyle(
-                      color: CColors.background,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 17),
-                ),
-                buttonColor: Colors.black,
-                backgroundColor: Colors.grey.shade100,
-                buttonSize: 40,
-                height: 50,
-                icon: const Icon(
-                  CupertinoIcons.power,
-                  color: Colors.white,
-                ))
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class RoomItem extends StatelessWidget {
-  const RoomItem({
-    Key? key,
-    required this.color,
-    required this.group,
-    required this.onTap,
-  }) : super(key: key);
-
-  final Color color;
-  final Group group;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(10),
-      onTap: onTap,
-      child: Container(
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10)),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.network(
-                "https://i.pinimg.com/564x/aa/37/d9/aa37d9a07051f6e4d6b1b890b8fa0a2f.jpg",
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: Style.screenSize.height * 0.2,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      group.name,
-                      style: Style.appTheme.textTheme.titleMedium!
-                          .copyWith(height: 1.3, color: CColors.black70),
-                    ),
-                    Text(
-                      "${group.interfaces.length} Devices",
-                      style: Style.appTheme.textTheme.bodySmall!
-                          .copyWith(height: 1.2, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            ]),
       ),
     );
   }

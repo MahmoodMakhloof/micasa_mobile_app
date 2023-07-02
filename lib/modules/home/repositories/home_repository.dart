@@ -30,13 +30,31 @@ class HomeRepository {
     }
   }
 
-  Future<Group> createNewGroup({required String name,required List<String> interfaces}) async {
+  Future<List<GroupPic>> fetchMyGroupPics() async {
+    try {
+      final uri = HomeNetworking.getGroupPics;
+      final customOptions = await getCustomOptions();
+      final response = await _client.getUri(
+        uri,
+        options: commonOptionsWithCustom(customOptions: customOptions),
+      );
+      final data = response.data['images'] as List;
+      final pics = data.map((element) => GroupPic.fromJson(element)).toList();
+      return pics;
+    } on DioError catch (e) {
+      final error = decodeDioError(e);
+      throw error;
+    }
+  }
+
+  Future<Group> createNewGroup(
+      {required String name, required String image}) async {
     try {
       final uri = HomeNetworking.createNewGroup;
       final customOptions = await getCustomOptions();
       final response = await _client.postUri(
         uri,
-        data: {"name": name, "interfaces": interfaces},
+        data: {"name": name, "image": image},
         options: commonOptionsWithCustom(customOptions: customOptions),
       );
       final data = response.data['group'];
@@ -102,6 +120,27 @@ class HomeRepository {
       final interfaces =
           data.map((element) => Interface.fromJson(element)).toList();
       return interfaces;
+    } on DioError catch (e) {
+      final error = decodeDioError(e);
+      throw error;
+    }
+  }
+
+  Future<Group> updateGroup(
+      {required String groupId,
+      required String name,
+      required String image}) async {
+    try {
+      final uri = HomeNetworking.updateGroup;
+      final customOptions = await getCustomOptions();
+      final response = await _client.patchUri(
+        uri,
+        data: {"groupId": groupId, "name": name, "image": image},
+        options: commonOptionsWithCustom(customOptions: customOptions),
+      );
+      final data = response.data['group'];
+      final group = Group.fromJson(data);
+      return group;
     } on DioError catch (e) {
       final error = decodeDioError(e);
       throw error;

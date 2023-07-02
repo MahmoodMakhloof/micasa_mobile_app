@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+
 import 'package:shca/modules/events/models/scence.dart';
 
 part 'schedule.g.dart';
@@ -38,5 +39,23 @@ class Schedule extends Equatable {
       enabled,
       events,
     ];
+  }
+
+  Schedule copyWith({
+    String? id,
+    String? name,
+    String? cron,
+    String? datetime,
+    bool? enabled,
+    List<Event>? events,
+  }) {
+    return Schedule(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      cron: cron ?? this.cron,
+      datetime: datetime ?? this.datetime,
+      enabled: enabled ?? this.enabled,
+      events: events ?? this.events,
+    );
   }
 }

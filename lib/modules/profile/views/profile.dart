@@ -77,7 +77,7 @@ class ConnectRequest extends StatelessWidget {
             ListTile(
               leading: const CircleAvatar(
                 radius: 25,
-                backgroundImage: NetworkImage(
+                backgroundImage: CachedNetworkImageProvider(
                     "https://i.pinimg.com/564x/3e/77/8a/3e778a1cd7385301da9691224f354d1d.jpg"),
               ),
               title: RichText(

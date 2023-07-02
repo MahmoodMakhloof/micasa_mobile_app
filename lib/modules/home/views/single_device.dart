@@ -187,6 +187,7 @@ class _SingleDeviceView extends StatelessWidget {
                               trackHeight: 60,
                               activeTrackColor: Colors.orange,
                               thumbShape: SliderComponentShape.noOverlay,
+                              trackShape: const RectangularSliderTrackShape(),
                               overlayShape: SliderComponentShape.noOverlay,
                               valueIndicatorShape:
                                   SliderComponentShape.noOverlay),
@@ -198,7 +199,7 @@ class _SingleDeviceView extends StatelessWidget {
                               alignment: Alignment.center,
                               children: [
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(40),
+                                  borderRadius: BorderRadius.circular(20),
                                   child: RotatedBox(
                                     quarterTurns: 3,
                                     child: Slider(

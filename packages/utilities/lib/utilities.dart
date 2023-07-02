@@ -7,7 +7,6 @@ export 'src/dummy_text_generator.dart';
 export 'src/exceptions.dart';
 export 'src/hex_color.dart';
 export 'src/locale.dart';
-export 'src/locale.dart';
 export 'src/navigation.dart';
 export 'src/networking.dart';
 export 'src/number_formatter.dart';

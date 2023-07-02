@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -45,7 +46,7 @@ class MyQrCodeScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             eyeStyle:
                 QrEyeStyle(color: CColors.primary, eyeShape: QrEyeShape.square),
-            embeddedImage: NetworkImage(
+            embeddedImage: CachedNetworkImageProvider(
               me.avatar!,
             ),
             embeddedImageStyle: const QrEmbeddedImageStyle(
