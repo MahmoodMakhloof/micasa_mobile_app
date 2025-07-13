@@ -66,7 +66,7 @@ As the **Lead System Architect and Full Stack Developer**, I was responsible for
 
 Developed with 💡 by **Mahmood Makhloof**  
 📧 mahmoodmakhloof1998@gmail.com  
-🌍 [LinkedIn](https://www.linkedin.com/in/mahmoodmakhloof/) | [GitHub](https://github.com/MahmoodMakhloof)
+🌍 [LinkedIn](https://www.linkedin.com/in/mahmoodmakhloof/) | [Whatsapp](https://wa.me/201155081748)
 
 ---
 
